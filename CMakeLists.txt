@@ -29,44 +29,48 @@ target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 #CPack
-set(CMAKE_INSTALL_PREFIX /opt/${CMAKE_PROJECT_NAME})
-
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}
-        DESTINATION bin
-        PERMISSIONS WORLD_EXECUTE OWNER_WRITE OWNER_READ)
-
-execute_process(COMMAND mkdir ${CMAKE_CURRENT_BINARY_DIR}/symlink)
-execute_process(COMMAND ln -s /opt/${CMAKE_PROJECT_NAME}/bin/${CMAKE_PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/symlink/${CMAKE_PROJECT_NAME})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/symlink/wordle-client-qt
-        DESTINATION /usr/bin/
-        PERMISSIONS WORLD_EXECUTE WORLD_READ)
-
-install(DIRECTORY deploy/wordle-client-qt/words
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ WORLD_READ
-        DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ WORLD_READ WORLD_WRITE WORLD_EXECUTE)
-
-install(FILES deploy/wordle-client-qt.svg
-        DESTINATION /usr/share/icons/hicolor/scalable/apps/)
-
-install(FILES deploy/wordle-client-qt.desktop
-        DESTINATION /usr/share/applications/)
-
-set(CPACK_GENERATOR "DEB")
-set(CPACK_DEBIAN_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-set(CPACK_PACKAGE_CONTACT "chicherin.alexey@ya.ru")
-set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/alec-chicherini/wordle-client-qt")
-set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
-set(CPACK_DEBIAN_PACKAGE_VERSION 25.01)
-set(CPACK_DEBIAN_FILE_NAME ${CPACK_DEBIAN_PACKAGE_NAME}_${CPACK_DEBIAN_PACKAGE_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb)
-set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
-if(${QT_VERSION_MAJOR} EQUAL 5)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS libqt5widgets5|libqt5widgets5t64 libqt5gui5|libqt5gui5t64 libqt5core5|libqt5core5a|libqt5core5t64 )
-elseif(${QT_VERSION_MAJOR} EQUAL 6)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS libqt6widgets6|libqt6widgets6t64 libqt6gui6|libqt6gui6t64 libqt6core6|libqt6core6t64 )
+if(EMSCRIPTEN)
+    #NOT DEFINED FOR WASM
 else()
-    message(FATAL_ERROR "Qt${QT_VERSION_MAJOR} not supported")
-endif()
+    set(CMAKE_INSTALL_PREFIX /opt/${CMAKE_PROJECT_NAME})
 
-include(CPack)
+    install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}
+            DESTINATION bin
+            PERMISSIONS WORLD_EXECUTE OWNER_WRITE OWNER_READ)
+    
+    execute_process(COMMAND mkdir ${CMAKE_CURRENT_BINARY_DIR}/symlink)
+    execute_process(COMMAND ln -s /opt/${CMAKE_PROJECT_NAME}/bin/${CMAKE_PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/symlink/${CMAKE_PROJECT_NAME})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/symlink/wordle-client-qt
+            DESTINATION /usr/bin/
+            PERMISSIONS WORLD_EXECUTE WORLD_READ)
+    
+    install(DIRECTORY deploy/wordle-client-qt/words
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ WORLD_READ
+            DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ WORLD_READ WORLD_WRITE WORLD_EXECUTE)
+    
+    install(FILES wordle-media/wordle.svg
+            DESTINATION /usr/share/icons/hicolor/scalable/apps/)
+    
+    install(FILES deploy/wordle-client-qt.desktop
+            DESTINATION /usr/share/applications/)
+    
+    set(CPACK_GENERATOR "DEB")
+    set(CPACK_DEBIAN_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+    set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+    set(CPACK_PACKAGE_CONTACT "chicherin.alexey@ya.ru")
+    set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/alec-chicherini/wordle-client-qt")
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
+    set(CPACK_DEBIAN_PACKAGE_VERSION 25.01)
+    set(CPACK_DEBIAN_FILE_NAME ${CPACK_DEBIAN_PACKAGE_NAME}_${CPACK_DEBIAN_PACKAGE_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb)
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
+    if(${QT_VERSION_MAJOR} EQUAL 5)
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS libqt5widgets5|libqt5widgets5t64 libqt5gui5|libqt5gui5t64 libqt5core5|libqt5core5a|libqt5core5t64 )
+    elseif(${QT_VERSION_MAJOR} EQUAL 6)
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS libqt6widgets6|libqt6widgets6t64 libqt6gui6|libqt6gui6t64 libqt6core6|libqt6core6t64 )
+    else()
+        message(FATAL_ERROR "Qt${QT_VERSION_MAJOR} not supported")
+    endif()
+    
+    include(CPack)
+endif()
