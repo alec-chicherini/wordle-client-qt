@@ -49,7 +49,7 @@ else()
             FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ WORLD_READ
             DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ WORLD_READ WORLD_WRITE WORLD_EXECUTE)
     
-    install(FILES wordle-media/wordle.svg
+    install(FILES wordle-media/icons/wordle.svg
             DESTINATION /usr/share/icons/hicolor/scalable/apps/)
     
     install(FILES deploy/wordle-client-qt.desktop
