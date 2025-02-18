@@ -44,13 +44,13 @@ apt install ubuntu-desktop
 apt install xrdp
 #passwd
 
-dpkg -i wordle-task_24.12_amd64.deb
+dpkg -i wordle-client-qt_24.12_amd64.deb
 apt-get install -f -y
 ```
 ## Запустить игру
-Пуск - Стандартные - wordle-task
+Пуск - Стандартные - wordle-client-qt
  
 ## Добавить слова в игру
 ```bash
-echo "УЕЫАО ЭЯИЮЙ" > /opt/wordle-task/words/new_words.txt
+echo "УЕЫАО ЭЯИЮЙ" > /opt/wordle-client-qt/words/new_words.txt
 ``` 

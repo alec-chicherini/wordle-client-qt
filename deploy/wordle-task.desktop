@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=/opt/wordle-task/bin/./wordle-task
-Icon=wordle-task
-Name=wordle-task
+Exec=/opt/wordle-client-qt/bin/./wordle-client-qt
+Icon=wordle-client-qt
+Name=wordle-client-qt
 Categories=Utility;

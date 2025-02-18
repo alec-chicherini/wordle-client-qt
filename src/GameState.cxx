@@ -130,7 +130,7 @@ GameState::GameState()
 {
     namespace fs = std::filesystem;
     try
-    {   const std::filesystem::path words{"/opt/wordle-task/words/"};
+    {   const std::filesystem::path words{"/opt/wordle-client-qt/words/"};
         for (auto const& dir_entry : fs::directory_iterator{words})
         {
             AddWordsFromFile(dir_entry);

@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
     QApplication app (argc, argv);
-    app.setWindowIcon(QIcon::fromTheme("wordle-task"));
+    app.setWindowIcon(QIcon::fromTheme("wordle-client-qt"));
     WidgetGame game;
     game.show();
 

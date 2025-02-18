@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /wordle-task/client_qt
+cd /wordle-client-qt
 rm build_client -rf
 mkdir build_client
 cd build_client
