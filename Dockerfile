@@ -110,8 +110,10 @@ COPY . /wordle-client-qt
 RUN cd wordle-client-qt && mkdir build_wasm && cd build_wasm && \
     /Qt-6.7.3-wasm/bin/./qt-cmake .. && \
     cmake --build . && \
-    RUN mkdir /result && \
-    cmake --install /result
+    mkdir /result && \
+    cp wordle-client-qt.* /result && \
+    cp qtloader.js /result && \
+    cp qtlogo.svg /result
 
 RUN chmod 755 /wordle-client-qt/scripts/run_python_http_server_wasm.sh
 ENTRYPOINT ["/wordle-client-qt/scripts/run_python_http_server_wasm.sh", "/result"]
