@@ -8,8 +8,7 @@ RUN apt update && \
     xz-utils \
     wget
 
-RUN wget https://github.com/alec-chicherini/development-scripts/blob/main/cmake/install_cmake.sh && \
-    bash install_cmake.sh
+RUN wget -O - https://raw.githubusercontent.com/alec-chicherini/development-scripts/refs/heads/main/cmake/install_cmake.sh 2>/dev/null | bash
 
 FROM ubuntu2404_common_deps AS ubuntu2404_qt_deps
 ENV DEBIAN_FRONTEND=noninteractive
@@ -71,8 +70,7 @@ RUN apt update && \
     qt5-default \
     wget
 RUN update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-10 100
-RUN wget https://github.com/alec-chicherini/development-scripts/blob/main/cmake/install_cmake.sh && \
-    bash install_cmake.sh
+RUN wget -O - https://raw.githubusercontent.com/alec-chicherini/development-scripts/refs/heads/main/cmake/install_cmake.sh 2>/dev/null | bash
 
 COPY . /wordle-client-qt
 RUN mkdir /result
