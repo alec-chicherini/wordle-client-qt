@@ -58,9 +58,9 @@ RUN cmake --build . --parallel 4
 RUN cmake --install . --prefix /Qt-6.7.3
 
 ENV QT_BUILDED_FROM_SOURCE_PATH=/Qt-6.7.3
-COPY . /wordle-task
+COPY . /wordle-client-qt
 RUN mkdir /result
-ENTRYPOINT ["bash", "/wordle-task/client_qt/deploy/rebuild.sh"]
+ENTRYPOINT ["bash", "/wordle-client-qt/deploy/rebuild.sh"]
 
 FROM ubuntu:20.04 AS qt_from_repo
 ENV DEBIAN_FRONTEND=noninteractive
@@ -70,12 +70,12 @@ RUN apt update && \
     g++-10 \ 
     qt5-default
 RUN update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-10 100
-COPY --chmod=777 scripts/install_cmake.sh ./
-RUN ./install_cmake.sh
+RUN wget https://github.com/alec-chicherini/development-scripts/blob/main/cmake/install_cmake.sh && \
+    bash install_cmake.sh
 
-COPY . /wordle-task
+COPY . /wordle-client-qt
 RUN mkdir /result
-ENTRYPOINT ["bash", "/wordle-task/client_qt/deploy/rebuild.sh"]
+ENTRYPOINT ["bash", "/wordle-client-qt/deploy/rebuild.sh"]
 
 FROM ubuntu2404_qt_deps AS qt_wasm_build_from_source
 ENV DEBIAN_FRONTEND=noninteractive
@@ -107,8 +107,8 @@ RUN cd /qt-everywhere-src-6.7.3 && mkdir qt-build-wasm && cd qt-build-wasm && \
 RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --build . --parallel 4
 RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --install . --prefix /Qt-6.7.3-wasm
 
-COPY . /wordle-task
-RUN cd wordle-task/client_qt && mkdir build_wasm && cd build_wasm && \
+COPY . /wordle-client-qt
+RUN cd wordle-client-qt && mkdir build_wasm && cd build_wasm && \
     /Qt-6.7.3-wasm/bin/./qt-cmake .. && \
     cmake --build .
 RUN chmod 755 /wordle-task/scripts/run_python_http_server_wasm.sh
