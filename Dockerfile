@@ -8,8 +8,8 @@ RUN apt update && \
     xz-utils \
     wget
 
-COPY --chmod=777 scripts/install_cmake.sh ./
-RUN ./install_cmake.sh
+RUN wget https://github.com/alec-chicherini/development-scripts/blob/main/cmake/install_cmake.sh && \
+    bash install_cmake.sh
 
 FROM ubuntu2404_common_deps AS ubuntu2404_qt_deps
 ENV DEBIAN_FRONTEND=noninteractive
@@ -76,3 +76,40 @@ RUN ./install_cmake.sh
 COPY . /wordle-task
 RUN mkdir /result
 ENTRYPOINT ["bash", "/wordle-task/client_qt/deploy/rebuild.sh"]
+
+FROM ubuntu2404_qt_deps AS qt_wasm_build_from_source
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && \
+    apt install -y \
+    clang \
+    libclang-18-dev
+
+RUN git clone https://github.com/emscripten-core/emsdk.git && \
+    cd emsdk && \
+    ./emsdk install 3.1.50 && \
+    ./emsdk activate 3.1.50 && \
+    bash ./emsdk_env.sh
+
+ENV EMSDK=/emsdk
+ENV EMSDK_NODE=/emsdk/node/20.18.0_64bit/bin/node
+ENV PATH=/emsdk:/emsdk/upstream/emscripten:/emsdk/node/20.18.0_64bit/bin:${PATH}
+
+RUN wget https://mirror.yandex.ru/mirrors/qt.io/archive/qt/6.7/6.7.3/single/qt-everywhere-src-6.7.3.tar.xz && \
+    tar xf qt-everywhere-src-6.7.3.tar.xz  && \
+    cd qt-everywhere-src-6.7.3 && \
+    mkdir qt-build-base && cd qt-build-base && \
+   ../configure -release -submodules qtbase,qtshadertools,qttools,qtquick3d,qtremoteobjects,qtscxml -nomake tests -nomake examples
+RUN cd /qt-everywhere-src-6.7.3/qt-build-base && cmake --build . --parallel 4
+RUN cd /qt-everywhere-src-6.7.3/qt-build-base && cmake --install . --prefix /Qt-6.7.3-base
+
+RUN cd /qt-everywhere-src-6.7.3 && mkdir qt-build-wasm && cd qt-build-wasm && \
+    ../configure -qt-host-path /Qt-6.7.3-base -platform wasm-emscripten -prefix /Qt-6.7.3-wasm
+RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --build . --parallel 4
+RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --install . --prefix /Qt-6.7.3-wasm
+
+COPY . /wordle-task
+RUN cd wordle-task/client_qt && mkdir build_wasm && cd build_wasm && \
+    /Qt-6.7.3-wasm/bin/./qt-cmake .. && \
+    cmake --build .
+RUN chmod 755 /wordle-task/scripts/run_python_http_server_wasm.sh
+ENTRYPOINT ["/wordle-task/scripts/run_python_http_server_wasm.sh", "/wordle-task/client_qt/build_wasm"]

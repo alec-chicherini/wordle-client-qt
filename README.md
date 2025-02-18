@@ -11,7 +11,7 @@
 
 Установить docker 
 ```bash
-source <(curl https://raw.githubusercontent.com/alec-chicherini/wordle-task/refs/heads/main/scripts/install_docker.sh)
+source <(curl https://raw.githubusercontent.com/alec-chicherini/development-scripts/refs/heads/main/docker/install_docker.sh)
 ```
 
 <!--Собрать клиент и deb пакет для linux-->
