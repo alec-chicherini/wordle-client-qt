@@ -20,6 +20,8 @@ source <(curl https://raw.githubusercontent.com/alec-chicherini/development-scri
 ```bash
 git clone https://github.com/alec-chicherini/wordle-client-qt.git
 cd wordle-client-qt
+git submodule init
+git submodule update
 docker build --target=qt_from_repo . -t wordle-client-qt-build-desktop
 #TODO docker build --target=qt_from_source . -t wordle-client-qt-build-desktop #другая опция собрать Qt из исходников.
 mkdir result #Тут будет инсталятор 
@@ -32,6 +34,8 @@ docker run -v ./result:/result wordle-client-qt-build-desktop
 ```bash
 git clone https://github.com/alec-chicherini/wordle-client-qt.git
 cd wordle-client-qt
+git submodule init
+git submodule update
 docker build --target=qt_wasm_build_from_source . -t wordle-client-qt-build-wasm
 docker run --rm -d -p 80:8000 wordle-client-qt-build-wasm
 ```
