@@ -68,7 +68,8 @@ RUN apt update && \
     apt install -y \
     git \
     g++-10 \ 
-    qt5-default
+    qt5-default \
+    wget
 RUN update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-10 100
 RUN wget https://github.com/alec-chicherini/development-scripts/blob/main/cmake/install_cmake.sh && \
     bash install_cmake.sh
