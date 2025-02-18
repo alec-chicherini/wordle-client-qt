@@ -109,6 +109,9 @@ RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --install . --prefix /Qt-
 COPY . /wordle-client-qt
 RUN cd wordle-client-qt && mkdir build_wasm && cd build_wasm && \
     /Qt-6.7.3-wasm/bin/./qt-cmake .. && \
-    cmake --build .
+    cmake --build . && \
+    RUN mkdir /result && \
+    cmake --install /result
+
 RUN chmod 755 /wordle-client-qt/scripts/run_python_http_server_wasm.sh
-ENTRYPOINT ["/wordle-client-qt/scripts/run_python_http_server_wasm.sh", "/wordle-client-qt/build_wasm"]
+ENTRYPOINT ["/wordle-client-qt/scripts/run_python_http_server_wasm.sh", "/result"]
