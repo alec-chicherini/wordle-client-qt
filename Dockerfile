@@ -111,5 +111,5 @@ COPY . /wordle-client-qt
 RUN cd wordle-client-qt && mkdir build_wasm && cd build_wasm && \
     /Qt-6.7.3-wasm/bin/./qt-cmake .. && \
     cmake --build .
-RUN chmod 755 /wordle-task/scripts/run_python_http_server_wasm.sh
-ENTRYPOINT ["/wordle-task/scripts/run_python_http_server_wasm.sh", "/wordle-task/client_qt/build_wasm"]
+RUN chmod 755 /wordle-client-qt/scripts/run_python_http_server_wasm.sh
+ENTRYPOINT ["/wordle-client-qt/scripts/run_python_http_server_wasm.sh", "/wordle-client-qt/build_wasm"]
