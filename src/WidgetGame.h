@@ -19,5 +19,3 @@ private:
 protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
 };
-
-

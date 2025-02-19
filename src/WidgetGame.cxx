@@ -7,8 +7,8 @@
 WidgetGame::WidgetGame()
 {
     [[maybe_unused]] bool connected;
-    WidgetKeyboard * widgetKeyboard = new WidgetKeyboard(m_state);
-    WidgetButtons * widgetButtons = new WidgetButtons(m_state);
+    WidgetKeyboard* widgetKeyboard = new WidgetKeyboard(m_state);
+    WidgetButtons* widgetButtons = new WidgetButtons(m_state);
 
     QVBoxLayout* qVBoxLayout = new QVBoxLayout(this);
     qVBoxLayout->addWidget(widgetButtons);
@@ -20,7 +20,7 @@ WidgetGame::WidgetGame()
             msgBox.setText(msg);
             msgBox.exec();
         });
-    Q_ASSERT_X(connected, "WidgetGame::WidgetGame connect(&m_state, &GameState::signalMsgBox, this, [](){})", "connected is FALSE");
+    Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
     connected = QObject::connect(&m_state, &GameState::signalQuitOrRestart, this, [=,this]()
         {
             QMessageBox msgBox(this);
@@ -37,7 +37,7 @@ WidgetGame::WidgetGame()
                 m_state.Reset();
             }
         });
-    Q_ASSERT_X(connected, "WidgetGame::WidgetGame connect(&m_state, &GameState::signalQuitOrRestart, this, [](){})", "connected is FALSE");
+    Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
 };
 
 void WidgetGame::keyPressEvent(QKeyEvent* event)

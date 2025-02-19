@@ -22,7 +22,7 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state)
                 btn->setFixedHeight(attr.second.height());
                 qHBoxLayout->addWidget(btn);
                 connected = QObject::connect(btn, &QPushButton::pressed, &m_state, [=,this]() { m_state.InputChar(btn->text());});
-                Q_ASSERT_X(connected, "WidgetGame::WidgetGame connect(btn, &QPushButton::pressed, &m_state, [](){})", "connected is FALSE");
+                Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
 
                 connected = QObject::connect(&m_state, &GameState::signalUpdateRowColors, this, [=,this](int row, QVector<QColor> colors)
                     {
@@ -39,7 +39,7 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state)
                             }
                         }
                     });
-                Q_ASSERT_X(connected, "WidgetGame::WidgetGame connect(&m_state, &GameState::signalUpdateRowColors, this, [](){})", "connected is FALSE");
+                Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
 
                 connected = QObject::connect(&m_state, &GameState::signalReset, this, [btn]()
                     {
@@ -49,7 +49,7 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state)
                         btn->setPalette(pal);
                         btn->update();
                     });
-                Q_ASSERT_X(connected, "WidgetGame::WidgetGame connect(&m_state, &GameState::signalReset, this, [](){})", "connected is FALSE");
+                Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
             }
             return gameKeyboardRow;
         };
@@ -67,7 +67,7 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state)
     qVBoxLayoutKeyboard->setAlignment(Qt::AlignCenter);
     qVBoxLayoutKeyboard->addWidget(createKeyboardRow(
         {
-        key("Й"),key("Ц"),key("У"),key("К"),key("Е"),key("Н"),key("Г"),key("Ш"),key("Щ"),key("З"),key("Х"),key("Ъ")
+        key("Ё"),key("Й"),key("Ц"),key("У"),key("К"),key("Е"),key("Н"),key("Г"),key("Ш"),key("Щ"),key("З"),key("Х"),key("Ъ")
         }));
     qVBoxLayoutKeyboard->addWidget(createKeyboardRow(
         {

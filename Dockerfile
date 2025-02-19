@@ -74,7 +74,8 @@ RUN wget -O - https://raw.githubusercontent.com/alec-chicherini/development-scri
 
 COPY . /wordle-client-qt
 RUN mkdir /result
-ENTRYPOINT ["bash", "/wordle-client-qt/deploy/rebuild.sh"]
+RUN bash /wordle-client-qt/deploy/rebuild.sh
+ENTRYPOINT ["ls", "/result"]
 
 FROM ubuntu2404_qt_deps AS qt_wasm_build_from_source
 ENV DEBIAN_FRONTEND=noninteractive
