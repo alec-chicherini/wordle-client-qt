@@ -18,7 +18,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
   qVBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
 
   QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(widget_aligned_center);
-  q_vbox_layout_menu->setAlignment(Qt::AlignCenter);
+  //q_vbox_layout_menu->setAlignment(Qt::AlignCenter);
 
   QPushButton* btn_play = new QPushButton("Играть");
   q_vbox_layout_menu->addWidget(btn_play);
