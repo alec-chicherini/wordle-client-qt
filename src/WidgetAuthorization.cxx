@@ -36,7 +36,6 @@ void WidgetAuthorization::LoginDataWasChanged() {
   QString styleSheet("QLabel { color : red; }");
   label_info_login->setStyleSheet(styleSheet);
   label_info_login->setText(QString::fromStdString(resultMessage));
-  qDebug() << "LoginDataWasChanged END";
 }
 
 WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
@@ -188,7 +187,7 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
 
     QString styleSheet("QLabel { color : green; }");
     label_info_login->setStyleSheet(styleSheet);
-    label_info_login->setText(
-        QString::fromStdString(kLoginStatusString[LoginStatus::kLoginIsOk]));
+    std::string text = kLoginStatusString[LoginStatus::kLoginIsOk];
+    label_info_login->setText(QString::fromStdString(text));
   }
 }
