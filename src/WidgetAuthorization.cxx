@@ -172,7 +172,7 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
   emit LoginDataWasChanged();
   emit RegistrationDataWasChanged();
 
-  connected = QObject::connect(api_application_logic_,
+  connected = QObject::connect(&api_application_logic_,
                                &APIApplicationLogic::ResponseLogin, this,
                                &WidgetAuthorization::ProcessLogin);
   IS_CONENCTED_OK
