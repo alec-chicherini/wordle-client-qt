@@ -22,11 +22,12 @@ void WidgetAuthorization::LoginDataWasChanged() {
   std::string resultMessage;
 
   if (line_edit_user_name_login->text().isEmpty()) {
-    resultMessage += kLoginStatusString[LoginStatus::kUserNameEmpty];
+    resultMessage += QString::fromStdString(kLoginStatusString[LoginStatus::kUserNameEmpty]);
   }
   if (line_edit_password_login->text().isEmpty()) {
     resultMessage += "\n";
-    resultMessage += kLoginStatusString[LoginStatus::kPasswordEmpty];
+    resultMessage +=
+        QString::fromStdString(kLoginStatusString[LoginStatus::kPasswordEmpty]);
   }
   if (line_edit_user_name_login->text().isEmpty() == false &&
       line_edit_password_login->text().isEmpty() == false) {
@@ -188,6 +189,6 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
     QString styleSheet("QLabel { color : green; }");
     label_info_login->setStyleSheet(styleSheet);
     label_info_login->setText(
-        QString(kLoginStatusString[LoginStatus::kLoginIsOk]));
+        QString::fromStdString(kLoginStatusString[LoginStatus::kLoginIsOk]));
   }
 }
