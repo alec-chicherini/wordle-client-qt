@@ -144,7 +144,7 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic)
   q_vbox_layout_authorization->addWidget(btn_registration);
 
   connected = QObject::connect(
-      btn_register, &QPushButton::clicked, &widget_application_logic_,
+      btn_registration, &QPushButton::clicked, &widget_application_logic_,
       [=, this]() {
         widget_application_logic_.GoTo(WidgetApplicationLogic::State::kMenu);
       });
