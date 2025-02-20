@@ -10,7 +10,7 @@
 #include <map>
 
 using namespace std::string_literals;
-const std::map<LoginStatus, std::string> kLoginStatusString = {
+std::map<LoginStatus, std::string> kLoginStatusString = {
     {LoginStatus::kNone, ""s},
     {LoginStatus::kUserNameEmpty, "Введите имя пользователя"s},
     {LoginStatus::kPasswordEmpty, "Введите пароль"s},
