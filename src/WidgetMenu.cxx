@@ -18,7 +18,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
       btn_play, &QPushButton::clicked, &widget_application_logic_, [=, this]() {
         widget_application_logic_.GoTo(WidgetApplicationLogic::State::kPlay);
       });
-  IS_CONENCTED_OK();
+  IS_CONENCTED_OK
 
   QPushButton* btn_statistic = new QPushButton("Статистика");
   q_vbox_layout_menu->addWidget(btn_statistic);
@@ -27,7 +27,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
                                  widget_application_logic_.GoTo(
                                      WidgetApplicationLogic::State::kStatistic);
                                });
-  IS_CONENCTED_OK();
+  IS_CONENCTED_OK
 
   QPushButton* btn_profile = new QPushButton("Профиль");
   q_vbox_layout_menu->addWidget(btn_profile);
@@ -36,7 +36,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
       [=, this]() {
         widget_application_logic_.GoTo(WidgetApplicationLogic::State::kProfile);
       });
-  IS_CONENCTED_OK();
+  IS_CONENCTED_OK
 
   QPushButton* btn_log_out = new QPushButton("Выход");
   q_vbox_layout_menu->addWidget(btn_log_out);
@@ -45,5 +45,5 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
       [=, this]() {
         widget_application_logic_.GoTo(WidgetApplicationLogic::State::kProfile);
       });
-  IS_CONENCTED_OK();
+  IS_CONENCTED_OK
 };
