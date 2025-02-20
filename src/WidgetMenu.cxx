@@ -43,7 +43,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
   connected = QObject::connect(
       btn_log_out, &QPushButton::clicked, &widget_application_logic_,
       [=, this]() {
-        widget_application_logic_.GoTo(WidgetApplicationLogic::State::kProfile);
+        widget_application_logic_.GoTo(WidgetApplicationLogic::State::kAuthorization);
       });
   IS_CONENCTED_OK
 };

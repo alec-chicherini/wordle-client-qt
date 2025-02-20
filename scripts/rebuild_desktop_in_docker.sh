@@ -2,7 +2,7 @@
 set -e
 git pull
 rm result -rf
-'sudo apt remove wordle-client-qt -y ; exit 0'
+trap 'sudo apt remove wordle-client-qt -y' ERR
 docker build --target=qt_from_repo . -t wordle-client-qt-build-desktop
 idTempContainer=$(docker create wordle-client-qt-build-desktop)
 docker cp "$idTempContainer":/result .
