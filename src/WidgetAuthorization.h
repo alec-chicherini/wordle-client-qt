@@ -2,6 +2,9 @@
 #include <WidgetApplicationLogic.h>
 #include <QObject>
 #include <QWidget>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QLabel>
 class WidgetAuthorization : public QWidget {
   Q_OBJECT
 

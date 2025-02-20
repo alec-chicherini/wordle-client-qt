@@ -3,9 +3,6 @@
 #include <QDebug>
 #include <QFrame>
 #include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
 #include <QRegularExpressionValidator>
 #include <QVBoxLayout>
 
