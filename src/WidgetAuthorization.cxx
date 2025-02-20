@@ -36,6 +36,7 @@ void WidgetAuthorization::LoginDataWasChanged() {
   QString styleSheet("QLabel { color : red; }");
   label_info_login->setStyleSheet(styleSheet);
   label_info_login->setText(QString::fromStdString(resultMessage));
+  qDebug() << "LoginDataWasChanged END";
 }
 
 WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
@@ -169,13 +170,13 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
   label_info_registration = new QLabel("");
   q_vbox_layout_authorization->addWidget(label_info_registration);
 
-  emit LoginDataWasChanged();
-  emit RegistrationDataWasChanged();
-
   connected = QObject::connect(&api_application_logic_,
                                &APIApplicationLogic::ResponseLogin, this,
                                &WidgetAuthorization::ProcessLogin);
   IS_CONENCTED_OK
+
+  emit LoginDataWasChanged();
+  emit RegistrationDataWasChanged();
 };
 
 void WidgetAuthorization::ProcessLogin(LoginStatus status) {
