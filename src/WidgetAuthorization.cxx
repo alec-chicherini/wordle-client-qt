@@ -190,3 +190,4 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
     label_info_login->setText(
         QString(kLoginStatusString[LoginStatus::kLoginIsOk]));
   }
+}
