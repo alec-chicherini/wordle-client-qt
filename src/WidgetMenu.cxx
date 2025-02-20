@@ -21,10 +21,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
   QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(widget_aligned_center);
   QLabel* labelLogin = new QLabel("Вход");
   q_vbox_layout_menu->addWidget(labelLogin);
-  QLineEdit* lineEditUserName = new QLineEdit();
 
-  lineEditUserName->setPlaceholderText("Имя пользователя");
-  q_vbox_layout_menu->addWidget(lineEditUserName);
   QPushButton* btn_play = new QPushButton("Играть");
   q_vbox_layout_menu->addWidget(btn_play);
 
