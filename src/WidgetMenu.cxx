@@ -12,7 +12,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
   [[maybe_unused]] bool connected;
 
   QVBoxLayout* qVBoxLayoutAuthorizationTop = new QVBoxLayout(this);
-  qVBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
+  //qVBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
   QWidget* widget_aligned_center = new QWidget;
   widget_aligned_center->setMaximumWidth(330);
   qVBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
