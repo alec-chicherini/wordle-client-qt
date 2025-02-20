@@ -11,19 +11,15 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
 
   [[maybe_unused]] bool connected;
 
-  setMaximumWidth(330);
-  setSizePolicy(QSizePolicy::Expanding,
+  QHBoxLayout* qHBoxLayoutAuthorizationTop = new QHBoxLayout(this);
+  qHBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
+  QWidget* widget_aligned_center = new QWidget;
+  widget_aligned_center->setMaximumWidth(330);
+  widget_aligned_center->setSizePolicy(QSizePolicy::Expanding,
                                        QSizePolicy::Preferred);
+  qHBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
 
-  //QHBoxLayout* qHBoxLayoutAuthorizationTop = new QHBoxLayout(this);
-  //qHBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
-  //QWidget* widget_aligned_center = new QWidget;
-  //widget_aligned_center->setMaximumWidth(330);
-  //widget_aligned_center->setSizePolicy(QSizePolicy::Expanding,
-  //                                     QSizePolicy::Preferred);
-  //qHBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
-
-  QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(this);
+  QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(widget_aligned_center);
 
   QPushButton* btn_play = new QPushButton("Играть");
   q_vbox_layout_menu->addWidget(btn_play);
