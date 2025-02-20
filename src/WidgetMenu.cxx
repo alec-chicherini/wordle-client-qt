@@ -3,7 +3,8 @@
 #include <QDebug>
 #include <QPushButton>
 #include <QVBoxLayout>
-
+#include <QLabel>
+#include <QLineEdit>
 #include <QtHelper.h>
 
 WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
