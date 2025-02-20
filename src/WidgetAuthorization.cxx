@@ -33,8 +33,8 @@ void WidgetAuthorization::LoginDataWasChanged() {
     api_application_logic_.RequestLogin(line_edit_user_name_login->text(),
                                         line_edit_password_login->text());
   }
-  QString resultStyleSheet("QLabel { color : red; }");
-  label_info_login->setStyleSheet(ProcessLogin);
+  QString styleSheet("QLabel { color : red; }");
+  label_info_login->setStyleSheet(styleSheet);
   label_info_login->setText(result);
 }
 
@@ -185,8 +185,8 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
     line_edit_password_login->setEnabled(false);
     btn_enter_login->setEnabled(true);
 
-    QString resultStyleSheet("QLabel { color : green; }");
-    label_info_login->setStyleSheet(ProcessLogin);
+    QString styleSheet("QLabel { color : green; }");
+    label_info_login->setStyleSheet(styleSheet);
     label_info_login->setText(
         QString(kLoginStatusString[LoginStatus::kLoginIsOk]));
   }
