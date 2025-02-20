@@ -18,7 +18,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
   QWidget* widget_aligned_center = new QWidget;
   widget_aligned_center->setMaximumWidth(330);
   widget_aligned_center->setSizePolicy(QSizePolicy::Expanding,
-                                       QSizePolicy::Preffered);
+                                       QSizePolicy::Preferred);
   qHBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
 
   QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(widget_aligned_center);
