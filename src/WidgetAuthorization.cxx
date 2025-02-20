@@ -10,113 +10,149 @@
 #include <QVBoxLayout>
 
 #include <QtHelper.h>
+#include <map>
+
+enum class LoginStatus {
+  kNone = 0,
+  kUserNameEmpty,
+  kPasswordEmpty,
+  kUnauthorized,
+  kLoginIsOk
+};
+using namespace std::string_literals;
+const std::map<LoginStatus, std::string> kLoginStatusString = {
+    {LoginStatus::kNone, ""s},
+    {LoginStatus::kUserNameEmpty, "Введите имя пользователя"s},
+    {LoginStatus::kPasswordEmpty, "Введите пароль"s},
+    {LoginStatus::kUnauthorized, "Неправильный логин или пароль"s},
+    {LoginStatus::kLoginIsOk, "Авторизация прошла успешно"s}};
 
 WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic)
     : widget_application_logic_(logic) {
   [[maybe_unused]] bool connected;
 
-  QVBoxLayout* qVBoxLayoutAuthorizationTop = new QVBoxLayout(this);
-  qVBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
+  QVBoxLayout* q_vbox_layout_authorizationTop = new QVBoxLayout(this);
+  q_vbox_layout_authorizationTop->setAlignment(Qt::AlignCenter);
   QWidget* widget_aligned_center = new QWidget;
   widget_aligned_center->setMaximumWidth(330);
-  qVBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
+  q_vbox_layout_authorizationTop->addWidget(widget_aligned_center);
 
-  QVBoxLayout* qVBoxLayoutAuthorization =
+  QVBoxLayout* q_vbox_layout_authorization =
       new QVBoxLayout(widget_aligned_center);
-  {
-    QLabel* labelLogin = new QLabel("Вход");
-    qVBoxLayoutAuthorization->addWidget(labelLogin);
 
-    QLineEdit* lineEditUserName = new QLineEdit();
-    lineEditUserName->setPlaceholderText("Имя пользователя");
-    qVBoxLayoutAuthorization->addWidget(lineEditUserName);
+  QLabel* label_login = new QLabel("Вход");
+  q_vbox_layout_authorization->addWidget(label_login);
 
-    QLineEdit* lineEditPassword = new QLineEdit();
-    lineEditPassword->setPlaceholderText("Пароль");
-    lineEditPassword->setEchoMode(QLineEdit::Password);
-    qVBoxLayoutAuthorization->addWidget(lineEditPassword);
+  line_edit_user_name_login = new QLineEdit();
+  line_edit_user_name_login->setPlaceholderText("Имя пользователя");
+  q_vbox_layout_authorization->addWidget(line_edit_user_name_login);
+  connected = QObject::connect(
+      line_edit_user_name_login, &QLineEdit::textChanged, this,
+      [=, this](const QString&) { emit LoginDataWasChanged(); });
+  IS_CONENCTED_OK
 
-    QPushButton* btn_enter = new QPushButton("Войти");
-    qVBoxLayoutAuthorization->addWidget(btn_enter);
+  line_edit_password_login = new QLineEdit();
+  line_edit_password_login->setPlaceholderText("Пароль");
+  line_edit_password_login->setEchoMode(QLineEdit::Password);
+  q_vbox_layout_authorization->addWidget(line_edit_password_login);
+  connected = QObject::connect(
+      line_edit_password_login, &QLineEdit::textChanged, this,
+      [=, this](const QString&) { emit LoginDataWasChanged(); });
+  IS_CONENCTED_OK
 
-    btn_enter->setEnabled(false);
+  btn_enter_login = new QPushButton("Войти");
+  btn_enter_login->setEnabled(false);
+  q_vbox_layout_authorization->addWidget(btn_enter_login);
+  connected = QObject::connect(
+      btn_enter_login, &QPushButton::clicked, &widget_application_logic_,
+      [=, this]() {
+        widget_application_logic_.GoTo(WidgetApplicationLogic::State::kMenu);
+      });
+  IS_CONENCTED_OK
 
-    connected = QObject::connect(
-        btn_enter, &QPushButton::clicked, &widget_application_logic_,
-        [=, this]() {
-          widget_application_logic_.GoTo(WidgetApplicationLogic::State::kMenu);
-        });
-    IS_CONENCTED_OK
+  QLabel* label_info_login = new QLabel;
+  q_vbox_layout_authorization->addWidget(label_info_login);
 
-    QLabel* label_login_info = new QLabel("Введите имя пользователя.\nВведите пароль.");
-    label_login_info->setStyleSheet("QLabel { color : red; }");
-    qVBoxLayoutAuthorization->addWidget(label_login_info);
-  }
+  QFrame* line_horizontal = new QFrame();
+  line_horizontal->setFrameShape(QFrame::HLine);
+  line_horizontal->setFrameShadow(QFrame::Sunken);
+  line_horizontal->setLineWidth(2);
+  q_vbox_layout_authorization->addWidget(line_horizontal);
 
-  QFrame* line = new QFrame();
-  line->setFrameShape(QFrame::HLine);  // Vertical line
-  line->setFrameShadow(QFrame::Sunken);
-  line->setLineWidth(2);
-  qVBoxLayoutAuthorization->addWidget(line);
+  QLabel* label_registration = new QLabel("Регистрация");
+  q_vbox_layout_authorization->addWidget(label_registration);
 
-  {
-    QLabel* labelRegistration = new QLabel("Регистрация");
-    qVBoxLayoutAuthorization->addWidget(labelRegistration);
+  line_edit_user_name_registration = new QLineEdit();
+  line_edit_user_name_registration->setPlaceholderText("Имя пользователя");
+  // constexpr int kUserNameMaxLength = 32;
+  // line_edit_user_name_registration->setMaxLength(kUserNameMaxLength);
+  q_vbox_layout_authorization->addWidget(line_edit_user_name_registration);
+  connected = QObject::connect(
+      line_edit_user_name_registration, &QLineEdit::textChanged, this,
+      [=, this](const QString&) { emit RegistrationDataWasChanged(); });
+  IS_CONENCTED_OK
 
-    QLineEdit* lineEditUserName = new QLineEdit();
-    lineEditUserName->setPlaceholderText("Имя пользователя");
-    constexpr int kUserNameMaxLength = 32;
-    lineEditUserName->setMaxLength(kUserNameMaxLength);
-    qVBoxLayoutAuthorization->addWidget(lineEditUserName);
+  // https://www.book2s.com/tutorials/qt-qregularexpressionvalidator.html
+  //  Create a QRegularExpressionValidator with a pattern for password
+  //  validation The above regular expression pattern enforces the following
+  //  criteria:
+  //  - At least 8 characters long
+  //  - Contains at least one digit [0-9]
+  //  - Contains at least one lowercase letter [a-z]
+  //  - Contains at least one uppercase letter [A-Z]
+  //  - Contains at least one special character [@#$%^&+=]
+  //  - Does not contain whitespace characters
+  // QRegularExpressionValidator* validatorPassword =
+  //    new QRegularExpressionValidator(
+  //        QRegularExpression("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+"
+  //                           "=])(?=\\S+$).{8,}$"));
+  // constexpr int kPasswordMaxLength = 16;
+  line_edit_password_registration = new QLineEdit();
+  line_edit_password_registration->setPlaceholderText("Пароль");
+  line_edit_password_registration->setEchoMode(QLineEdit::Password);
+  // line_edit_password_registration->setValidator(validatorPassword);
+  // line_edit_password_registration->setMaxLength(kPasswordMaxLength);
+  q_vbox_layout_authorization->addWidget(line_edit_password_registration);
+  connected = QObject::connect(
+      line_edit_password_registration, &QLineEdit::textChanged, this,
+      [=, this](const QString&) { emit RegistrationDataWasChanged(); });
+  IS_CONENCTED_OK
 
-    // https://www.book2s.com/tutorials/qt-qregularexpressionvalidator.html
-    //  Create a QRegularExpressionValidator with a pattern for password
-    //  validation The above regular expression pattern enforces the following
-    //  criteria:
-    //  - At least 8 characters long
-    //  - Contains at least one digit [0-9]
-    //  - Contains at least one lowercase letter [a-z]
-    //  - Contains at least one uppercase letter [A-Z]
-    //  - Contains at least one special character [@#$%^&+=]
-    //  - Does not contain whitespace characters
-    QRegularExpressionValidator* validatorPassword =
-        new QRegularExpressionValidator(
-            QRegularExpression("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+"
-                               "=])(?=\\S+$).{8,}$"));
-    constexpr int kPasswordMaxLength = 16;
-    QLineEdit* lineEditPassword = new QLineEdit();
-    lineEditPassword->setPlaceholderText("Пароль");
-    lineEditPassword->setEchoMode(QLineEdit::Password);
-    lineEditPassword->setValidator(validatorPassword);
-    lineEditPassword->setMaxLength(kPasswordMaxLength);
-    qVBoxLayoutAuthorization->addWidget(lineEditPassword);
+  line_edit_password_confirm_registration = new QLineEdit();
+  line_edit_password_confirm_registration->setPlaceholderText(
+      "Подтверждение пароля");
+  line_edit_password_confirm_registration->setEchoMode(QLineEdit::Password);
+  // line_edit_password_confirm_registration->setValidator(validatorPassword);
+  // line_edit_password_confirm_registration->setMaxLength(kPasswordMaxLength);
+  q_vbox_layout_authorization->addWidget(
+      line_edit_password_confirm_registration);
+  connected = QObject::connect(
+      line_edit_password_confirm_registration, &QLineEdit::textChanged, this,
+      [=, this](const QString&) { emit RegistrationDataWasChanged(); });
+  IS_CONENCTED_OK
 
-    QLineEdit* lineEditPasswordConfirm = new QLineEdit();
-    lineEditPasswordConfirm->setPlaceholderText("Подтверждение пароля");
-    lineEditPasswordConfirm->setEchoMode(QLineEdit::Password);
-    lineEditPasswordConfirm->setValidator(validatorPassword);
-    lineEditPasswordConfirm->setMaxLength(kPasswordMaxLength);
-    qVBoxLayoutAuthorization->addWidget(lineEditPasswordConfirm);
+  // QRegularExpressionValidator* validatorEMail = new
+  // QRegularExpressionValidator(
+  // QRegularExpression("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"));
+  line_edit_email_registration = new QLineEdit();
+  // line_edit_email_registration->setValidator(validatorEMail);
+  line_edit_email_registration->setPlaceholderText("Почта");
+  q_vbox_layout_authorization->addWidget(line_edit_email_registration);
+  connected = QObject::connect(
+      line_edit_email_registration, &QLineEdit::textChanged, this,
+      [=, this](const QString&) { emit RegistrationDataWasChanged(); });
+  IS_CONENCTED_OK
 
-    QRegularExpressionValidator* validatorEMail =
-        new QRegularExpressionValidator(QRegularExpression(
-            "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"));
-    QLineEdit* lineEditEMAil = new QLineEdit();
-    lineEditEMAil->setValidator(validatorEMail);
-    lineEditEMAil->setPlaceholderText("Почта");
-    qVBoxLayoutAuthorization->addWidget(lineEditEMAil);
+  btn_registration = new QPushButton("Зарегистрировать");
+  q_vbox_layout_authorization->addWidget(btn_registration);
 
-    QPushButton* btn_register = new QPushButton("Зарегистрировать");
-    qVBoxLayoutAuthorization->addWidget(btn_register);
+  connected = QObject::connect(
+      btn_register, &QPushButton::clicked, &widget_application_logic_,
+      [=, this]() {
+        widget_application_logic_.GoTo(WidgetApplicationLogic::State::kMenu);
+      });
+  IS_CONENCTED_OK
 
-    connected = QObject::connect(
-        btn_register, &QPushButton::clicked, &widget_application_logic_,
-        [=, this]() {
-          widget_application_logic_.GoTo(WidgetApplicationLogic::State::kMenu);
-        });
-    IS_CONENCTED_OK
-
-    QLabel* label_login_info = new QLabel("");
-    qVBoxLayoutAuthorization->addWidget(label_login_info);
-  }
+  label_info_registration = new QLabel("");
+  q_vbox_layout_authorization->addWidget(label_info_registration);
 };
