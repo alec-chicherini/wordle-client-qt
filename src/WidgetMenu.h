@@ -10,5 +10,5 @@ public:
     WidgetMenu(WidgetApplicationLogic& logic);
 
 private:
-    WidgetApplicationLogic widget_application_logic_;
+    WidgetApplicationLogic& widget_application_logic_;
 };
