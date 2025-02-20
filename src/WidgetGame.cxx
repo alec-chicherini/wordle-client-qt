@@ -3,7 +3,7 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QApplication>
-
+#include <QtHelper.h>
 WidgetGame::WidgetGame()
 {
     [[maybe_unused]] bool connected;
@@ -20,7 +20,7 @@ WidgetGame::WidgetGame()
             msgBox.setText(msg);
             msgBox.exec();
         });
-    Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
+    IS_CONENCTED_OK
     connected = QObject::connect(&m_state, &GameState::signalQuitOrRestart, this, [=,this]()
         {
             QMessageBox msgBox(this);
@@ -37,7 +37,7 @@ WidgetGame::WidgetGame()
                 m_state.Reset();
             }
         });
-    Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
+    IS_CONENCTED_OK
 };
 
 void WidgetGame::keyPressEvent(QKeyEvent* event)

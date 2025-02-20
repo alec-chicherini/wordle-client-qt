@@ -9,6 +9,8 @@
 #include <QFrame>
 #include <QLabel>
 
+#include <QtHelper.h>
+
 WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic):widget_application_logic_(logic)
 {
     [[maybe_unused]] bool connected;
@@ -37,7 +39,7 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic):widget_a
         qVBoxLayoutAuthorization->addWidget(btn_enter);
 
         connected = QObject::connect(btn_enter, &QPushButton::clicked, &widget_application_logic_, [=, this]() { widget_application_logic_.GoTo(WidgetApplicationLogic::State::kMenu); });
-        Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
+        IS_CONENCTED_OK
     }
 
     QFrame* line = new QFrame();
@@ -91,6 +93,6 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic):widget_a
         qVBoxLayoutAuthorization->addWidget(btn_register);
 
         connected = QObject::connect(btn_register, &QPushButton::clicked, &widget_application_logic_, [=, this]() { widget_application_logic_.GoTo(WidgetApplicationLogic::State::kMenu); });
-        Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " " + std::to_string(__LINE__)).c_str(), "connected is FALSE");
+        IS_CONENCTED_OK
     }
 };

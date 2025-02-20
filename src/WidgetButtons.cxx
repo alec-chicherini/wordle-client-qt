@@ -1,4 +1,5 @@
 #include <WidgetButtons.h>
+#include <QtHelper.h>
 
 WidgetButtons::WidgetButtons(GameState& state):m_state(state)
 {
@@ -39,7 +40,7 @@ WidgetButtons::WidgetButtons(GameState& state):m_state(state)
                         }
                     }
                 });
-            Q_ASSERT_X(connected, "WidgetButtons::WidgetButtons connect(&m_state, &GameState::signalUpdate, this, [](){})", "connected is FALSE");
+            IS_CONENCTED_OK
 
             connected = QObject::connect(&m_state, &GameState::signalUpdateRowColors,this,[=,this](int row, QVector<QColor> colors)
                 {
@@ -54,7 +55,7 @@ WidgetButtons::WidgetButtons(GameState& state):m_state(state)
                         btn->update();
                     }
                 });
-            Q_ASSERT_X(connected, "WidgetButtons::WidgetButtons connect(&m_state, &GameState::signalUpdateRowColors, this, [](){})", "connected is FALSE");
+            IS_CONENCTED_OK
 
             connected = QObject::connect(&m_state, &GameState::signalReset,this, [widgetField]()
                 {
@@ -64,7 +65,7 @@ WidgetButtons::WidgetButtons(GameState& state):m_state(state)
                     widgetField->setPalette(pal);
                     widgetField->update();
                 });
-            Q_ASSERT_X(connected, "WidgetButtons::WidgetButtons connect(&m_state, &GameState::signalReset, this, [](){})", "connected is FALSE");
+            IS_CONENCTED_OK
         }
     }
 

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QApplication>
-
+#include <QtHelper.h>
 WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state)
 {
     [[maybe_unused]] bool connected;
@@ -22,7 +22,7 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state)
                 btn->setFixedHeight(attr.second.height());
                 qHBoxLayout->addWidget(btn);
                 connected = QObject::connect(btn, &QPushButton::pressed, &m_state, [=,this]() { m_state.InputChar(btn->text());});
-                Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
+                IS_CONENCTED_OK
 
                 connected = QObject::connect(&m_state, &GameState::signalUpdateRowColors, this, [=,this](int row, QVector<QColor> colors)
                     {
@@ -39,7 +39,7 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state)
                             }
                         }
                     });
-                Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
+                IS_CONENCTED_OK
 
                 connected = QObject::connect(&m_state, &GameState::signalReset, this, [btn]()
                     {
@@ -49,7 +49,7 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state)
                         btn->setPalette(pal);
                         btn->update();
                     });
-                Q_ASSERT_X(connected, std::string(std::string(__FILE__) + " line:" + std::to_string(__LINE__)).c_str(), "connected is FALSE");
+                IS_CONENCTED_OK
             }
             return gameKeyboardRow;
         };
