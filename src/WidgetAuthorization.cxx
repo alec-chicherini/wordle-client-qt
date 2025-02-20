@@ -32,6 +32,7 @@ void WidgetAuthorization::LoginDataWasChanged() {
       line_edit_password_login->text().isEmpty() == false) {
     api_application_logic_.RequestLogin(line_edit_user_name_login->text(),
                                         line_edit_password_login->text());
+    return;
   }
   QString styleSheet("QLabel { color : red; }");
   label_info_login->setStyleSheet(styleSheet);
