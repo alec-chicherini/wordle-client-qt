@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QtHelper.h>
+#include <QSizePolicy>
 
 WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
     : widget_application_logic_(logic) {
