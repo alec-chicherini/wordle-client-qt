@@ -35,7 +35,7 @@ void WidgetAuthorization::LoginDataWasChanged() {
   }
   QString styleSheet("QLabel { color : red; }");
   label_info_login->setStyleSheet(styleSheet);
-  label_info_login->setText(QString::fromStdString(result));
+  label_info_login->setText(QString::fromStdString(resultMessage));
 }
 
 WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
