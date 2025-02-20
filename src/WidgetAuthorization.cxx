@@ -75,7 +75,6 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
   IS_CONENCTED_OK
 
   btn_enter_login = new QPushButton("Войти");
-  btn_enter_login->setEnabled(false);
   q_vbox_layout_authorization->addWidget(btn_enter_login);
   connected = QObject::connect(
       btn_enter_login, &QPushButton::clicked, &widget_application_logic_,
@@ -159,7 +158,6 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
 
   btn_registration = new QPushButton("Зарегистрировать");
   q_vbox_layout_authorization->addWidget(btn_registration);
-  btn_registration->setEnabled(false);
   connected = QObject::connect(
       btn_registration, &QPushButton::clicked, &widget_application_logic_,
       [=, this]() {
@@ -174,9 +172,16 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
                                &APIApplicationLogic::ResponseLogin, this,
                                &WidgetAuthorization::ProcessLogin);
   IS_CONENCTED_OK
+  connected = QObject::connect(
+      &widget_application_logic_, &WidgetApplicationLogic::StateChanged, this,
+      [=, this](WidgetApplicationLogic::State state) {
+        if (state == WidgetApplicationLogic::State::kAuthorization) {
+          ProcessLogOut();
+        }
+      });
+  IS_CONENCTED_OK
 
-  emit LoginDataWasChanged();
-  emit RegistrationDataWasChanged();
+  ProcessLogOut();
 };
 
 void WidgetAuthorization::ProcessLogin(LoginStatus status) {
@@ -185,6 +190,10 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
     line_edit_user_name_login->setEnabled(false);
     line_edit_password_login->setEnabled(false);
     btn_enter_login->setEnabled(true);
+    QString styleSheet("QLabel { color : green; }");
+    label_info_login->setStyleSheet(styleSheet);
+    label_info_login->setText(
+        QString::fromStdString(kLoginStatusString[LoginStatus::kLoginIsOk]));
 
     line_edit_user_name_registration->setEnabled(false);
     line_edit_password_registration->setEnabled(false);
@@ -192,10 +201,32 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
     line_edit_email_registration->setEnabled(false);
     btn_registration->setEnabled(false);
     label_info_registration->setText(QString());
-
-    QString styleSheet("QLabel { color : green; }");
+  } else if (status == LoginStatus::kUnauthorized) {
+    QString styleSheet("QLabel { color : red; }");
     label_info_login->setStyleSheet(styleSheet);
-    std::string text = kLoginStatusString[LoginStatus::kLoginIsOk];
-    label_info_login->setText(QString::fromStdString(text));
+    label_info_login->setText(
+        QString::fromStdString(kLoginStatusString[LoginStatus::kUnauthorized]));
   }
+}
+
+void WidgetAuthorization::ProcessLogOut() {
+  qDebug() << "ProcessLogOut";
+  line_edit_user_name_login->setEnabled(true);
+  line_edit_user_name_login->setText(QString());
+  line_edit_password_login->setEnabled(true);
+  line_edit_password_login->setText(QString());
+  btn_enter_login->setEnabled(false);
+
+  line_edit_user_name_registration->setEnabled(true);
+  line_edit_user_name_registration->setText(QString());
+  line_edit_password_registration->setEnabled(true);
+  line_edit_password_registration->setText(QString());
+  line_edit_password_confirm_registration->setEnabled(true);
+  line_edit_password_confirm_registration->setText(QString());
+  line_edit_email_registration->setEnabled(true);
+  line_edit_email_registration->setText(QString());
+  btn_registration->setEnabled(false);
+
+  emit LoginDataWasChanged();
+  emit RegistrationDataWasChanged();
 }

@@ -16,6 +16,8 @@ class WidgetAuthorization : public QWidget {
  private:
   WidgetApplicationLogic& widget_application_logic_;
   APIApplicationLogic& api_application_logic_;
+
+ private:
   QLineEdit* line_edit_user_name_login;
   QLineEdit* line_edit_password_login;
   QPushButton* btn_enter_login;
@@ -37,5 +39,6 @@ class WidgetAuthorization : public QWidget {
   }
 
  public slots:
+  void ProcessLogOut();
   void ProcessLogin(LoginStatus status);
 };

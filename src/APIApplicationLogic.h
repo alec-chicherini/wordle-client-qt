@@ -17,7 +17,7 @@ public:
     APIApplicationLogic();
  void RequestLogin(const QString& user_name, const QString& password) 
  {
-      emit ResponseLogin(LoginStatus::kLoginIsOk);
+      emit ResponseLogin(LoginStatus::kUnauthorized);
  };
  //public slots:
 //    void GoTo(State state);
