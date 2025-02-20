@@ -24,8 +24,6 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
   //qHBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
 
   QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(this);
-  QLabel* labelLogin = new QLabel("Вход");
-  q_vbox_layout_menu->addWidget(labelLogin);
 
   QPushButton* btn_play = new QPushButton("Играть");
   q_vbox_layout_menu->addWidget(btn_play);
