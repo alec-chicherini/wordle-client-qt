@@ -11,13 +11,13 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
 
   [[maybe_unused]] bool connected;
 
- // QVBoxLayout* qVBoxLayoutAuthorizationTop = new QVBoxLayout(this);
-  //qVBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
-  //QWidget* widget_aligned_center = new QWidget;
-  setMaximumWidth(330);
-  //qVBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
+  QVBoxLayout* qVBoxLayoutAuthorizationTop = new QVBoxLayout(this);
+  qVBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
+  QWidget* widget_aligned_center = new QWidget;
+  widget_aligned_center->setMaximumWidth(330);
+  qVBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
 
-  QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(this);
+  QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(widget_aligned_center);
   q_vbox_layout_menu->setAlignment(Qt::AlignCenter);
 
   QPushButton* btn_play = new QPushButton("Играть");
