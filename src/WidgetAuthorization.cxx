@@ -187,7 +187,7 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
 
    // QString styleSheet("QLabel { color : green; }");
     //label_info_login->setStyleSheet(styleSheet);
-    std::string text = kLoginStatusString[LoginStatus::kUserNameEmpty];
-    label_info_login->setText(QString::fromStdString(text));
+    //std::string text = kLoginStatusString[LoginStatus::kUserNameEmpty];
+    //label_info_login->setText(QString::fromStdString(text));
   }
 }
