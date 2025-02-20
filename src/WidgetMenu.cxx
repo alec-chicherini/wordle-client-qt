@@ -11,7 +11,7 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
 
   [[maybe_unused]] bool connected;
 
-  QHBoxLayout* qVBoxLayoutAuthorizationTop = new QHBoxLayout(this);
+  QHBoxLayout* qHBoxLayoutAuthorizationTop = new QHBoxLayout(this);
   qHBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter | Qt::AlignJustify);
   QWidget* widget_aligned_center = new QWidget;
   widget_aligned_center->setMaximumWidth(330);
