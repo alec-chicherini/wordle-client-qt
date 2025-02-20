@@ -18,10 +18,15 @@ WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
   qHBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
 
   QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(widget_aligned_center);
+  QLabel* labelLogin = new QLabel("Вход");
+  q_vbox_layout_menu->addWidget(labelLogin);
+  QLineEdit* lineEditUserName = new QLineEdit();
 
+  lineEditUserName->setPlaceholderText("Имя пользователя");
+  q_vbox_layout_menu->addWidget(lineEditUserName);
   QPushButton* btn_play = new QPushButton("Играть");
   q_vbox_layout_menu->addWidget(btn_play);
-  q_vbox_layout_menu->setAlignment(btn_play,Qt::AlignJustify);
+
   connected = QObject::connect(
       btn_play, &QPushButton::clicked, &widget_application_logic_, [=, this]() {
         widget_application_logic_.GoTo(WidgetApplicationLogic::State::kPlay);
