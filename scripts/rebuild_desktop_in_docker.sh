@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-sudo apt remove wordle-client-qt -y
+$(sudo apt remove wordle-client-qt -y || echo ok)
 rm result -rf
 git pull
 docker build --target=qt_from_repo . -t wordle-client-qt-build-desktop
