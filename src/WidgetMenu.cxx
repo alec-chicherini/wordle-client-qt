@@ -3,25 +3,27 @@
 #include <QDebug>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
+#include <QHBoxLayout>
 #include <QtHelper.h>
-#include <QSizePolicy>
 
 WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
     : widget_application_logic_(logic) {
 
   [[maybe_unused]] bool connected;
 
-  QHBoxLayout* qHBoxLayoutAuthorizationTop = new QHBoxLayout(this);
-  qHBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
-  QWidget* widget_aligned_center = new QWidget;
-  widget_aligned_center->setMaximumWidth(330);
-  widget_aligned_center->setSizePolicy(QSizePolicy::Expanding,
+  setMaximumWidth(330);
+  setSizePolicy(QSizePolicy::Expanding,
                                        QSizePolicy::Preferred);
-  qHBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
 
-  QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(widget_aligned_center);
+  //QHBoxLayout* qHBoxLayoutAuthorizationTop = new QHBoxLayout(this);
+  //qHBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
+  //QWidget* widget_aligned_center = new QWidget;
+  //widget_aligned_center->setMaximumWidth(330);
+  //widget_aligned_center->setSizePolicy(QSizePolicy::Expanding,
+  //                                     QSizePolicy::Preferred);
+  //qHBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
+
+  QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(this);
   QLabel* labelLogin = new QLabel("Вход");
   q_vbox_layout_menu->addWidget(labelLogin);
 
