@@ -54,7 +54,7 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic)
         });
     IS_CONENCTED_OK
 
-    QLabel* label_login_info = new QLabel("Введите имя пользователя.\тВведите пароль.");
+    QLabel* label_login_info = new QLabel("Введите имя пользователя.\nВведите пароль.");
     qVBoxLayoutAuthorization->addWidget(label_login_info);
   }
 
