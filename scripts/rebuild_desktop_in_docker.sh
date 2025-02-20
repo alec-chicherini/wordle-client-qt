@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 sudo apt remove wordle-client-qt -y
 rm result -rf
 git pull
