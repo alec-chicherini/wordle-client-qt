@@ -178,7 +178,7 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
   IS_CONENCTED_OK
 };
 
-  void WidgetAuthorization::ProcessLogin(LoginStatus status) {
+void WidgetAuthorization::ProcessLogin(LoginStatus status) {
   qDebug() << "ProcessLogin";
   if (status == LoginStatus::kLoginIsOk) {
     line_edit_user_name_login->setEnabled(false);
