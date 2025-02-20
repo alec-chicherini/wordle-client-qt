@@ -1,18 +1,21 @@
 #pragma once
+#include <APIApplicationLogic.h>
 #include <WidgetApplicationLogic.h>
-#include <QObject>
-#include <QWidget>
-#include <QLineEdit>
-#include <QPushButton>
 #include <QLabel>
+#include <QLineEdit>
+#include <QObject>
+#include <QPushButton>
+#include <QWidget>
 class WidgetAuthorization : public QWidget {
   Q_OBJECT
 
  public:
-  WidgetAuthorization(WidgetApplicationLogic& logic);
+  WidgetAuthorization(WidgetApplicationLogic& widget_logic,
+                      APIApplicationLogic& api_logic);
 
  private:
   WidgetApplicationLogic& widget_application_logic_;
+  APIApplicationLogic& api_application_logic_;
   QLineEdit* line_edit_user_name_login;
   QLineEdit* line_edit_password_login;
   QPushButton* btn_enter_login;
@@ -26,13 +29,15 @@ class WidgetAuthorization : public QWidget {
   QLabel* label_info_registration;
 
  private slots:
-  void LoginDataWasChanged() {
-    qDebug() << "LoginDataWasChanged";
-    // label_info_login->setStyleSheet("QLabel { color : red; }");
-  }
+  void LoginDataWasChanged();
 
-    void RegistrationDataWasChanged() {
+  void RegistrationDataWasChanged() {
     qDebug() << "RegistrationDataWasChanged";
     //
   }
-  };
+
+ public slots:
+  void ProcessLogin(LoginStatus status);
+};
+}
+;

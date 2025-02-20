@@ -9,13 +9,6 @@
 #include <QtHelper.h>
 #include <map>
 
-enum class LoginStatus {
-  kNone = 0,
-  kUserNameEmpty,
-  kPasswordEmpty,
-  kUnauthorized,
-  kLoginIsOk
-};
 using namespace std::string_literals;
 const std::map<LoginStatus, std::string> kLoginStatusString = {
     {LoginStatus::kNone, ""s},
@@ -24,8 +17,31 @@ const std::map<LoginStatus, std::string> kLoginStatusString = {
     {LoginStatus::kUnauthorized, "Неправильный логин или пароль"s},
     {LoginStatus::kLoginIsOk, "Авторизация прошла успешно"s}};
 
-WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic)
-    : widget_application_logic_(logic) {
+void WidgetAuthorization::LoginDataWasChanged() {
+  qDebug() << "LoginDataWasChanged";
+  std::string resultMessage;
+
+  if (line_edit_user_name_login->text().isEmpty()) {
+    resultMessage += kLoginStatusString[LoginStatus::kUserNameEmpty];
+  }
+  if (line_edit_password_login->text().isEmpty()) {
+    resultMessage += "\n";
+    resultMessage += kLoginStatusString[LoginStatus::kPasswordEmpty];
+  }
+  if (line_edit_user_name_login->text().isEmpty() == false &&
+      line_edit_password_login->text().isEmpty() == false) {
+    api_application_logic_.RequestLogin(line_edit_user_name_login->text(),
+                                        line_edit_password_login->text());
+  }
+  QString resultStyleSheet("QLabel { color : red; }");
+  label_info_login->setStyleSheet(ProcessLogin);
+  label_info_login->setText(result);
+}
+
+WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
+                                         APIApplicationLogic& api_logic)
+    : widget_application_logic_(widget_logic),
+      api_application_logic_(api_logic) {
   [[maybe_unused]] bool connected;
 
   QVBoxLayout* q_vbox_layout_authorizationTop = new QVBoxLayout(this);
@@ -142,7 +158,7 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic)
 
   btn_registration = new QPushButton("Зарегистрировать");
   q_vbox_layout_authorization->addWidget(btn_registration);
-
+  btn_registration->setEnabled(false);
   connected = QObject::connect(
       btn_registration, &QPushButton::clicked, &widget_application_logic_,
       [=, this]() {
@@ -152,4 +168,25 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic)
 
   label_info_registration = new QLabel("");
   q_vbox_layout_authorization->addWidget(label_info_registration);
+
+  emit LoginDataWasChanged();
+  emit RegistrationDataWasChanged();
+
+  connected = QObject::connect(api_application_logic_,
+                               &APIApplicationLogic::ResponseLogin, this,
+                               &WidgetAuthorization::ProcessLogin);
+  IS_CONENCTED_OK
 };
+
+  void WidgetAuthorization::ProcessLogin(LoginStatus status) {
+  qDebug() << "ProcessLogin";
+  if (status == LoginStatus::kLoginIsOk) {
+    line_edit_user_name_login->setEnabled(false);
+    line_edit_password_login->setEnabled(false);
+    btn_enter_login->setEnabled(true);
+
+    QString resultStyleSheet("QLabel { color : green; }");
+    label_info_login->setStyleSheet(ProcessLogin);
+    label_info_login->setText(
+        QString(kLoginStatusString[LoginStatus::kLoginIsOk]));
+  }
