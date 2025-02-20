@@ -30,12 +30,6 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& logic)
     QLineEdit* lineEditUserName = new QLineEdit();
     lineEditUserName->setPlaceholderText("Имя пользователя");
     qVBoxLayoutAuthorization->addWidget(lineEditUserName);
-    connected = QObject::connect(
-        btn_enter, &QPushButton::clicked, &widget_application_logic_,
-        [=, this]() {
-          widget_application_logic_.GoTo(WidgetApplicationLogic::State::kMenu);
-        });
-    IS_CONENCTED_OK
 
     QLineEdit* lineEditPassword = new QLineEdit();
     lineEditPassword->setPlaceholderText("Пароль");
