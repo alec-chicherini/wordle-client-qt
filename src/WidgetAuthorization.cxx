@@ -84,7 +84,7 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
       });
   IS_CONENCTED_OK
 
-  QLabel* label_info_login = new QLabel;
+  label_info_login = new QLabel;
   q_vbox_layout_authorization->addWidget(label_info_login);
 
   QFrame* line_horizontal = new QFrame();
