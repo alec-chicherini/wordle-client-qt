@@ -34,4 +34,5 @@ class WidgetAuthorization : public QWidget {
     void RegistrationDataWasChanged() {
     qDebug() << "RegistrationDataWasChanged";
     //
+  }
   };
