@@ -19,7 +19,7 @@ WidgetApplication::WidgetApplication()
     q_stacked_widget->layout()->setAlignment(Qt::AlignCenter);
     WidgetGame* widget_game = new WidgetGame();
     WidgetAuthorization* widget_authorization = new WidgetAuthorization(widget_application_logic_);
-    WidgetMenu* widget_menu = new WidgetMenu();
+    WidgetMenu* widget_menu = new WidgetMenu(widget_application_logic_);
     q_stacked_widget->addWidget(widget_authorization);
     q_stacked_widget->addWidget(widget_menu);
     q_stacked_widget->addWidget(widget_game);

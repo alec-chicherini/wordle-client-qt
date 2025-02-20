@@ -6,7 +6,8 @@
 
 #include <QtHelper.h>
 
-WidgetMenu::WidgetMenu() : widget_application_logic_(logic) {
+WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
+    : widget_application_logic_(logic) {
   [[maybe_unused]] bool connected;
   QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(this);
   q_vbox_layout_menu->setAlignment(Qt::AlignCenter);
