@@ -39,5 +39,3 @@ class WidgetAuthorization : public QWidget {
  public slots:
   void ProcessLogin(LoginStatus status);
 };
-}
-;
