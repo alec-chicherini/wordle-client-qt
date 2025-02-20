@@ -186,6 +186,13 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
     line_edit_password_login->setEnabled(false);
     btn_enter_login->setEnabled(true);
 
+    line_edit_user_name_registration->setEnabled(false);
+    line_edit_password_registration->setEnabled(false);
+    line_edit_password_confirm_registration->setEnabled(false);
+    line_edit_email_registration->setEnabled(false);
+    btn_registration->setEnabled(false);
+    label_info_registration->setText(QString());
+
     QString styleSheet("QLabel { color : green; }");
     label_info_login->setStyleSheet(styleSheet);
     std::string text = kLoginStatusString[LoginStatus::kLoginIsOk];
