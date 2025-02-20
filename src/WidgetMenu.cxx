@@ -1,24 +1,59 @@
 #include <WidgetMenu.h>
 
+#include <QtHelper.h>
 #include <QDebug>
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QPushButton>
+#include <QVBoxLayout>
 
-WidgetMenu::WidgetMenu()
-{
-    [[maybe_unused]] bool connected;
-    QVBoxLayout* qVBoxLayoutMenu = new QVBoxLayout(this);
-    qVBoxLayoutMenu->setAlignment(Qt::AlignCenter);
+WidgetMenu::WidgetMenu(WidgetApplicationLogic& logic)
+    : widget_application_logic_(logic) {
+  [[maybe_unused]] bool connected;
 
-    QPushButton* btnPlay = new QPushButton("Играть");
-    qVBoxLayoutMenu->addWidget(btnPlay);
+  QHBoxLayout* qHBoxLayoutAuthorizationTop = new QHBoxLayout(this);
+  qHBoxLayoutAuthorizationTop->setAlignment(Qt::AlignCenter);
+  QWidget* widget_aligned_center = new QWidget;
+  widget_aligned_center->setMaximumWidth(330);
+  widget_aligned_center->setSizePolicy(QSizePolicy::Expanding,
+                                       QSizePolicy::Preferred);
+  qHBoxLayoutAuthorizationTop->addWidget(widget_aligned_center);
 
-    QPushButton* btnStatistic = new QPushButton("Статистика");
-    qVBoxLayoutMenu->addWidget(btnStatistic);
+  QVBoxLayout* q_vbox_layout_menu = new QVBoxLayout(widget_aligned_center);
 
-    QPushButton* btnProfile = new QPushButton("Профиль");
-    qVBoxLayoutMenu->addWidget(btnProfile);
+  QPushButton* btn_play = new QPushButton("Играть");
+  q_vbox_layout_menu->addWidget(btn_play);
 
-    QPushButton* btnLogOut = new QPushButton("Выход");
-    qVBoxLayoutMenu->addWidget(btnLogOut);
+  connected = QObject::connect(
+      btn_play, &QPushButton::clicked, &widget_application_logic_, [=, this]() {
+        widget_application_logic_.GoTo(WidgetApplicationLogic::State::kPlay);
+      });
+  IS_CONENCTED_OK
+
+  QPushButton* btn_statistic = new QPushButton("Статистика");
+  q_vbox_layout_menu->addWidget(btn_statistic);
+  connected = QObject::connect(btn_statistic, &QPushButton::clicked,
+                               &widget_application_logic_, [=, this]() {
+                                 widget_application_logic_.GoTo(
+                                     WidgetApplicationLogic::State::kStatistic);
+                               });
+  IS_CONENCTED_OK
+
+  QPushButton* btn_profile = new QPushButton("Профиль");
+  q_vbox_layout_menu->addWidget(btn_profile);
+  connected = QObject::connect(
+      btn_profile, &QPushButton::clicked, &widget_application_logic_,
+      [=, this]() {
+        widget_application_logic_.GoTo(WidgetApplicationLogic::State::kProfile);
+      });
+  IS_CONENCTED_OK
+
+  QPushButton* btn_log_out = new QPushButton("Выход");
+  q_vbox_layout_menu->addWidget(btn_log_out);
+  connected =
+      QObject::connect(btn_log_out, &QPushButton::clicked,
+                       &widget_application_logic_, [=, this]() {
+                         widget_application_logic_.GoTo(
+                             WidgetApplicationLogic::State::kAuthorization);
+                       });
+  IS_CONENCTED_OK
 };

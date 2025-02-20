@@ -1,11 +1,13 @@
 #pragma once
-#include <QWidget>
+#include <WidgetApplicationLogic.h>
 #include <QObject>
+#include <QWidget>
+class WidgetMenu : public QWidget {
+  Q_OBJECT
 
-class WidgetMenu : public QWidget
-{
-    Q_OBJECT
+ public:
+  WidgetMenu(WidgetApplicationLogic& logic);
 
-public:
-    WidgetMenu();
+ private:
+  WidgetApplicationLogic& widget_application_logic_;
 };

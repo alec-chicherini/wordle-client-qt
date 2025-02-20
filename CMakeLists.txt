@@ -21,6 +21,7 @@ set(SOURCE_FILES__
     WidgetGame.h WidgetGame.cxx 
     WidgetApplication.h WidgetApplication.cxx
     WidgetApplicationLogic.h WidgetApplicationLogic.cxx
+    APIApplicationLogic.h APIApplicationLogic.cxx
     WidgetAuthorization.h WidgetAuthorization.cxx
     WidgetMenu.h WidgetMenu.cxx
     WidgetTopMenu.h WidgetTopMenu.cxx
