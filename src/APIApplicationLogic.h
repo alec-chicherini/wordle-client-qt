@@ -7,7 +7,20 @@ enum class LoginStatus {
   kUserNameEmpty,
   kPasswordEmpty,
   kUnauthorized,
-  kLoginIsOk
+  kLoginIsOk,
+  kRequestInProgress
+};
+
+enum class RegistrationStatus {
+  kNone = 0,
+  kUserNameEmpty,
+  kPasswordEmpty,
+  kPasswordConfirmEmpty,
+  kPasswordMismatch,
+  kUserNameDuplicate,
+  kRegistrationIsOk,
+  kRequestInProgress,
+  kBadEmailAddress,
 };
 
 class APIApplicationLogic : public QObject {
@@ -16,13 +29,9 @@ class APIApplicationLogic : public QObject {
  public:
   APIApplicationLogic();
   void RequestLogin(const QString& user_name, const QString& password);
-  // public slots:
-  //    void GoTo(State state);
-  //
+  void RequestRegistration(const QString& user_name, const QString& password,
+                           const QString& e_mail);
  signals:
   void ResponseLogin(LoginStatus status);
-  //
-  //
-  // private:
-  //    State current_state_;
+  void ResponseRegistration(RegistrationStatus status);
 };

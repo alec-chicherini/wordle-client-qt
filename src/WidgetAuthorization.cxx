@@ -7,41 +7,125 @@
 #include <QVBoxLayout>
 
 #include <QtHelper.h>
+#include <algorithm>
 #include <map>
-
+#include <vector>
 using namespace std::string_literals;
-std::map<LoginStatus, std::string> kLoginStatusString = {
+const std::map<LoginStatus, std::string> kLoginStatusString = {
     {LoginStatus::kNone, ""s},
     {LoginStatus::kUserNameEmpty, "Введите имя пользователя"s},
     {LoginStatus::kPasswordEmpty, "Введите пароль"s},
     {LoginStatus::kUnauthorized, "Неправильный логин или пароль"s},
-    {LoginStatus::kLoginIsOk, "Авторизация прошла успешно"s}};
+    {LoginStatus::kLoginIsOk, "Авторизация прошла успешно"s},
+    {LoginStatus::kRequestInProgress, "Соединение с сервером.."s}};
+
+const std::map<RegistrationStatus, std::string> kRegistrationStatusString = {
+    {RegistrationStatus::kNone, ""s},
+    {RegistrationStatus::kUserNameEmpty, "Введите имя пользователя"s},
+    {RegistrationStatus::kPasswordEmpty, "Введите пароль"s},
+    {RegistrationStatus::kPasswordConfirmEmpty,
+     "Введите подтверждение пароля"s},
+    {RegistrationStatus::kPasswordMismatch, "Пароли не совпадают"s},
+    {RegistrationStatus::kUserNameDuplicate, "Имя пользователя занято"s},
+    {RegistrationStatus::kRegistrationIsOk, "Регистрация возможна"s},
+    {RegistrationStatus::kBadEmailAddress, "Неправильный формат адреса почты"s},
+    {RegistrationStatus::kRequestInProgress, "Соединение с сервером.."s}};
 
 void WidgetAuthorization::LoginDataWasChanged() {
-  std::string resultMessage;
-
+  std::vector<std::string> resultMessage;
+  btn_enter_login->setEnabled(false);
   if (line_edit_user_name_login->text().isEmpty()) {
-    resultMessage += kLoginStatusString[LoginStatus::kUserNameEmpty];
+    resultMessage.push_back(kLoginStatusString.at(LoginStatus::kUserNameEmpty));
   }
   if (line_edit_password_login->text().isEmpty()) {
-    resultMessage += "\n";
-    resultMessage += kLoginStatusString[LoginStatus::kPasswordEmpty];
+    resultMessage.push_back(kLoginStatusString.at(LoginStatus::kPasswordEmpty));
   }
   if (line_edit_user_name_login->text().isEmpty() == false &&
       line_edit_password_login->text().isEmpty() == false) {
+    count_request_login++;
     api_application_logic_.RequestLogin(line_edit_user_name_login->text(),
                                         line_edit_password_login->text());
+    QString styleSheet("QLabel { color : darkGreen; }");
+    label_info_login->setStyleSheet(styleSheet);
+    label_info_login->setText(QString::fromStdString(
+        kLoginStatusString.at(LoginStatus::kRequestInProgress)));
     return;
   }
   QString styleSheet("QLabel { color : red; }");
   label_info_login->setStyleSheet(styleSheet);
-  label_info_login->setText(QString::fromStdString(resultMessage));
-}
+  std::string result_message_all = std::accumulate(
+      std::next(resultMessage.begin()), resultMessage.end(), resultMessage[0],
+      [](const std::string& lhs, const std::string& rhs) {
+        return lhs + "\n" + rhs;
+      });
 
+  label_info_login->setText(QString::fromStdString(result_message_all));
+}
+void WidgetAuthorization::RegistrationDataWasChanged() {
+  std::vector<std::string> resultMessage;
+  btn_registration->setEnabled(false);
+  if (line_edit_user_name_registration->text().isEmpty()) {
+    resultMessage.push_back(
+        kRegistrationStatusString.at(RegistrationStatus::kUserNameEmpty));
+  }
+  if (line_edit_password_registration->text().isEmpty()) {
+    resultMessage.push_back(
+        kRegistrationStatusString.at(RegistrationStatus::kPasswordEmpty));
+  }
+  if (line_edit_password_confirm_registration->text().isEmpty()) {
+    resultMessage.push_back(kRegistrationStatusString.at(
+        RegistrationStatus::kPasswordConfirmEmpty));
+  }
+  if (line_edit_password_registration->text().isEmpty() == false &&
+      line_edit_password_confirm_registration->text().isEmpty() == false) {
+    if (line_edit_password_registration->text() !=
+        line_edit_password_confirm_registration->text()) {
+      resultMessage.push_back(
+          kRegistrationStatusString.at(RegistrationStatus::kPasswordMismatch));
+    }
+  }
+
+  QRegularExpressionValidator* validatorEMail = new QRegularExpressionValidator(
+      QRegularExpression("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"));
+  int pos;
+  QString email_entered = line_edit_email_registration->text();
+  if (line_edit_email_registration->text().isEmpty() == false &&
+      validatorEMail->validate(email_entered, pos) != QValidator::Acceptable) {
+    resultMessage.push_back(
+        kRegistrationStatusString.at(RegistrationStatus::kBadEmailAddress));
+  }
+
+  if (resultMessage.empty()) {
+    count_request_registration++;
+    api_application_logic_.RequestRegistration(
+        line_edit_user_name_registration->text(),
+        line_edit_password_registration->text(),
+        line_edit_email_registration->text());
+    QString styleSheet("QLabel { color : darkGreen; }");
+    label_info_registration->setStyleSheet(styleSheet);
+    label_info_registration->setText(QString::fromStdString(
+        kRegistrationStatusString.at(RegistrationStatus::kRequestInProgress)));
+
+    return;
+  } else {
+    QString styleSheet("QLabel { color : red; }");
+    label_info_registration->setStyleSheet(styleSheet);
+    std::string result_message_all = std::accumulate(
+        std::next(resultMessage.begin()), resultMessage.end(), resultMessage[0],
+        [](const std::string& lhs, const std::string& rhs) {
+          return lhs + "\n" + rhs;
+        });
+
+    label_info_registration->setText(
+        QString::fromStdString(result_message_all));
+  }
+}
 WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
                                          APIApplicationLogic& api_logic)
     : widget_application_logic_(widget_logic),
-      api_application_logic_(api_logic) {
+      api_application_logic_(api_logic),
+      count_request_login(0),
+      count_request_registration(0) {
   [[maybe_unused]] bool connected;
 
   QVBoxLayout* q_vbox_layout_authorizationTop = new QVBoxLayout(this);
@@ -96,34 +180,14 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
 
   line_edit_user_name_registration = new QLineEdit();
   line_edit_user_name_registration->setPlaceholderText("Имя пользователя");
-  // constexpr int kUserNameMaxLength = 32;
-  // line_edit_user_name_registration->setMaxLength(kUserNameMaxLength);
   q_vbox_layout_authorization->addWidget(line_edit_user_name_registration);
   connected = QObject::connect(
       line_edit_user_name_registration, &QLineEdit::textChanged, this,
       [=, this](const QString&) { emit RegistrationDataWasChanged(); });
   IS_CONENCTED_OK
-
-  // https://www.book2s.com/tutorials/qt-qregularexpressionvalidator.html
-  //  Create a QRegularExpressionValidator with a pattern for password
-  //  validation The above regular expression pattern enforces the following
-  //  criteria:
-  //  - At least 8 characters long
-  //  - Contains at least one digit [0-9]
-  //  - Contains at least one lowercase letter [a-z]
-  //  - Contains at least one uppercase letter [A-Z]
-  //  - Contains at least one special character [@#$%^&+=]
-  //  - Does not contain whitespace characters
-  // QRegularExpressionValidator* validatorPassword =
-  //    new QRegularExpressionValidator(
-  //        QRegularExpression("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+"
-  //                           "=])(?=\\S+$).{8,}$"));
-  // constexpr int kPasswordMaxLength = 16;
   line_edit_password_registration = new QLineEdit();
   line_edit_password_registration->setPlaceholderText("Пароль");
   line_edit_password_registration->setEchoMode(QLineEdit::Password);
-  // line_edit_password_registration->setValidator(validatorPassword);
-  // line_edit_password_registration->setMaxLength(kPasswordMaxLength);
   q_vbox_layout_authorization->addWidget(line_edit_password_registration);
   connected = QObject::connect(
       line_edit_password_registration, &QLineEdit::textChanged, this,
@@ -134,8 +198,6 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
   line_edit_password_confirm_registration->setPlaceholderText(
       "Подтверждение пароля");
   line_edit_password_confirm_registration->setEchoMode(QLineEdit::Password);
-  // line_edit_password_confirm_registration->setValidator(validatorPassword);
-  // line_edit_password_confirm_registration->setMaxLength(kPasswordMaxLength);
   q_vbox_layout_authorization->addWidget(
       line_edit_password_confirm_registration);
   connected = QObject::connect(
@@ -143,11 +205,7 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
       [=, this](const QString&) { emit RegistrationDataWasChanged(); });
   IS_CONENCTED_OK
 
-  // QRegularExpressionValidator* validatorEMail = new
-  // QRegularExpressionValidator(
-  // QRegularExpression("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"));
   line_edit_email_registration = new QLineEdit();
-  // line_edit_email_registration->setValidator(validatorEMail);
   line_edit_email_registration->setPlaceholderText("Почта");
   q_vbox_layout_authorization->addWidget(line_edit_email_registration);
   connected = QObject::connect(
@@ -171,6 +229,10 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
                                &APIApplicationLogic::ResponseLogin, this,
                                &WidgetAuthorization::ProcessLogin);
   IS_CONENCTED_OK
+  connected = QObject::connect(&api_application_logic_,
+                               &APIApplicationLogic::ResponseRegistration, this,
+                               &WidgetAuthorization::ProcessRegistration);
+  IS_CONENCTED_OK
   connected = QObject::connect(
       &widget_application_logic_, &WidgetApplicationLogic::StateChanged, this,
       [=, this](WidgetApplicationLogic::State state) {
@@ -184,6 +246,8 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
 };
 
 void WidgetAuthorization::ProcessLogin(LoginStatus status) {
+  count_request_login -= 1;
+  if (count_request_login != 0) return;
   if (status == LoginStatus::kLoginIsOk) {
     line_edit_user_name_login->setEnabled(false);
     line_edit_password_login->setEnabled(false);
@@ -191,7 +255,7 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
     QString styleSheet("QLabel { color : green; }");
     label_info_login->setStyleSheet(styleSheet);
     label_info_login->setText(
-        QString::fromStdString(kLoginStatusString[LoginStatus::kLoginIsOk]));
+        QString::fromStdString(kLoginStatusString.at(LoginStatus::kLoginIsOk)));
 
     line_edit_user_name_registration->setEnabled(false);
     line_edit_password_registration->setEnabled(false);
@@ -202,8 +266,25 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
   } else if (status == LoginStatus::kUnauthorized) {
     QString styleSheet("QLabel { color : red; }");
     label_info_login->setStyleSheet(styleSheet);
-    label_info_login->setText(
-        QString::fromStdString(kLoginStatusString[LoginStatus::kUnauthorized]));
+    label_info_login->setText(QString::fromStdString(
+        kLoginStatusString.at(LoginStatus::kUnauthorized)));
+  }
+}
+
+void WidgetAuthorization::ProcessRegistration(RegistrationStatus status) {
+  count_request_registration -= 1;
+  if (count_request_registration != 0) return;
+  if (status == RegistrationStatus::kUserNameDuplicate) {
+    QString styleSheet("QLabel { color : red; }");
+    label_info_registration->setStyleSheet(styleSheet);
+    label_info_registration->setText(QString::fromStdString(
+        kRegistrationStatusString.at(RegistrationStatus::kUserNameDuplicate)));
+  } else if (status == RegistrationStatus::kRegistrationIsOk) {
+    QString styleSheet("QLabel { color : green; }");
+    label_info_registration->setStyleSheet(styleSheet);
+    label_info_registration->setText(QString::fromStdString(
+        kRegistrationStatusString.at(RegistrationStatus::kRegistrationIsOk)));
+    btn_registration->setEnabled(true);
   }
 }
 
