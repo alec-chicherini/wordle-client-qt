@@ -9,6 +9,6 @@ void WidgetApplicationLogic::GoTo(State state) {
       state == WidgetApplicationLogic::State::kStatistic) {
     return;
   }
-  emit StateChanged(state);
+  emit StateChanged(current_state_, state);
   current_state_ = state;
 };

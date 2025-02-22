@@ -4,24 +4,28 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QMessageBox>
-WidgetGame::WidgetGame() {
+WidgetGame::WidgetGame(WidgetApplicationLogic& widget_logic,
+                       APIApplicationLogic& api_logic)
+    : game_state_(api_logic),
+      widget_application_logic_(widget_logic),
+      api_application_logic_(api_logic) {
   [[maybe_unused]] bool connected;
-  WidgetKeyboard* widgetKeyboard = new WidgetKeyboard(m_state);
-  WidgetButtons* widgetButtons = new WidgetButtons(m_state);
+  WidgetKeyboard* widgetKeyboard = new WidgetKeyboard(game_state_);
+  WidgetButtons* widgetButtons = new WidgetButtons(game_state_);
 
   QVBoxLayout* qVBoxLayout = new QVBoxLayout(this);
   qVBoxLayout->addWidget(widgetButtons);
   qVBoxLayout->addWidget(widgetKeyboard);
 
-  connected = QObject::connect(&m_state, &GameState::signalMsgBox, this,
+  connected = QObject::connect(&game_state_, &GameState::SignalMsgBox, this,
                                [=, this](QString msg) {
                                  QMessageBox msgBox(this);
                                  msgBox.setText(msg);
                                  msgBox.exec();
                                });
   IS_CONENCTED_OK
-  connected = QObject::connect(&m_state, &GameState::signalQuitOrRestart, this,
-                               [=, this]() {
+  connected = QObject::connect(&game_state_, &GameState::SignalQuitOrRestart,
+                               this, [=, this]() {
                                  QMessageBox msgBox(this);
                                  msgBox.setText(QString("Играть ещё?"));
                                  msgBox.addButton(QMessageBox::Yes);
@@ -30,9 +34,18 @@ WidgetGame::WidgetGame() {
                                  if (result == QMessageBox::No) {
                                    qApp->exit(1);
                                  } else {
-                                   m_state.Reset();
+                                   game_state_.Reset();
                                  }
                                });
+  IS_CONENCTED_OK
+  connected = QObject::connect(
+      &widget_application_logic_, &WidgetApplicationLogic::StateChanged,
+      &game_state_,
+      [=, this](WidgetApplicationLogic::State state_previous,
+                WidgetApplicationLogic::State state_now) {
+        if (state_previous == WidgetApplicationLogic::State::kAuthorization)
+          game_state_.Reset();
+      });
   IS_CONENCTED_OK
 };
 
@@ -59,6 +72,6 @@ void WidgetGame::keyPressEvent(QKeyEvent* event) {
   }
 
   if (needToSend) {
-    m_state.InputChar(charToSend);
+    game_state_.InputChar(charToSend);
   }
 };

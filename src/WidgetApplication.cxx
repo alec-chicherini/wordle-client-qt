@@ -16,7 +16,8 @@ WidgetApplication::WidgetApplication() {
   WidgetTopMenu* widget_top_menu = new WidgetTopMenu(widget_application_logic_);
   QStackedWidget* q_stacked_widget = new QStackedWidget();
   q_stacked_widget->layout()->setAlignment(Qt::AlignCenter);
-  WidgetGame* widget_game = new WidgetGame();
+  WidgetGame* widget_game =
+      new WidgetGame(widget_application_logic_, api_application_logic_);
   WidgetAuthorization* widget_authorization = new WidgetAuthorization(
       widget_application_logic_, api_application_logic_);
   WidgetMenu* widget_menu = new WidgetMenu(widget_application_logic_);
@@ -30,8 +31,10 @@ WidgetApplication::WidgetApplication() {
 
   connected = QObject::connect(
       &widget_application_logic_, &WidgetApplicationLogic::StateChanged,
-      q_stacked_widget, [=, this](WidgetApplicationLogic::State state) {
-        q_stacked_widget->setCurrentWidget(map_state_widget_[state]);
+      q_stacked_widget,
+      [=, this](WidgetApplicationLogic::State state_previous,
+                WidgetApplicationLogic::State state_now) {
+        q_stacked_widget->setCurrentWidget(map_state_widget_[state_now]);
       });
   IS_CONENCTED_OK
 
@@ -41,5 +44,6 @@ WidgetApplication::WidgetApplication() {
   q_vbox_layout->setAlignment(Qt::AlignCenter);
 
   emit widget_application_logic_.StateChanged(
+      WidgetApplicationLogic::State::kNone,
       WidgetApplicationLogic::State::kAuthorization);
 };

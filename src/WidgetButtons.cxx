@@ -1,7 +1,7 @@
 #include <QtHelper.h>
 #include <WidgetButtons.h>
 
-WidgetButtons::WidgetButtons(GameState& state) : m_state(state) {
+WidgetButtons::WidgetButtons(GameState& state) : game_state_(state) {
   [[maybe_unused]] bool connected;
   auto createBtnGameField = []() {
     QPushButton* btn;
@@ -16,15 +16,15 @@ WidgetButtons::WidgetButtons(GameState& state) : m_state(state) {
   qGridLayout->setContentsMargins(0, 0, 0, 0);
   qGridLayout->setAlignment(Qt::AlignCenter);
 
-  for (int i = 0; i < ROWS_NUM; i++) {
-    for (int j = 0; j < COLS_NUM; j++) {
+  for (int i = 0; i < kRowsNum; i++) {
+    for (int j = 0; j < kColsNum; j++) {
       QPushButton* widgetField = createBtnGameField();
       m_btns[i][j] = widgetField;
       qGridLayout->addWidget(widgetField, i, j);
       connected = QObject::connect(
-          &m_state, &GameState::signalUpdate, this, [=, this](int row) {
-            QString rowString = m_state.GetRow(row);
-            for (int k = 0; k < COLS_NUM; k++) {
+          &game_state_, &GameState::SignalUpdate, this, [=, this](int row) {
+            QString rowString = game_state_.GetRow(row);
+            for (int k = 0; k < kColsNum; k++) {
               if (k < rowString.length()) {
                 m_btns[row][k]->setText(QString(rowString[k]));
               } else {
@@ -35,10 +35,10 @@ WidgetButtons::WidgetButtons(GameState& state) : m_state(state) {
       IS_CONENCTED_OK
 
       connected =
-          QObject::connect(&m_state, &GameState::signalUpdateRowColors, this,
-                           [=, this](int row, QVector<QColor> colors) {
-                             QString rowString = m_state.GetRow(row);
-                             for (int k = 0; k < COLS_NUM; k++) {
+          QObject::connect(&game_state_, &GameState::SignalUpdateRowColors,
+                           this, [=, this](int row, QVector<QColor> colors) {
+                             QString rowString = game_state_.GetRow(row);
+                             for (int k = 0; k < kColsNum; k++) {
                                auto btn = m_btns[row][k];
                                QPalette pal = btn->palette();
                                pal.setColor(QPalette::Button, colors[k]);
@@ -50,7 +50,7 @@ WidgetButtons::WidgetButtons(GameState& state) : m_state(state) {
       IS_CONENCTED_OK
 
       connected = QObject::connect(
-          &m_state, &GameState::signalReset, this, [widgetField]() {
+          &game_state_, &GameState::SignalReset, this, [widgetField]() {
             QPalette pal = widgetField->palette();
             pal.setColor(QPalette::Button, QColor(239, 239, 239, 255));
             widgetField->setAutoFillBackground(true);

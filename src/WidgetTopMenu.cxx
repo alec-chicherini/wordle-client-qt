@@ -51,8 +51,9 @@ WidgetTopMenu::WidgetTopMenu(WidgetApplicationLogic& logic)
 
   connected = QObject::connect(
       &widget_application_logic_, &WidgetApplicationLogic::StateChanged, this,
-      [=, this](WidgetApplicationLogic::State state) {
-        if (state == WidgetApplicationLogic::State::kAuthorization) {
+      [=, this](WidgetApplicationLogic::State state_previous,
+                WidgetApplicationLogic::State state_now) {
+        if (state_now == WidgetApplicationLogic::State::kAuthorization) {
           setVisible(false);
         } else {
           setVisible(true);

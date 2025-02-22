@@ -3,7 +3,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QKeyEvent>
-WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state) {
+WidgetKeyboard::WidgetKeyboard(GameState& state) : game_state_(state) {
   [[maybe_unused]] bool connected;
   constexpr int KEY_SIZE = 50;
   using strQSize_T = std::pair<QString, QSize>;
@@ -19,15 +19,15 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state) {
       btn->setFixedHeight(attr.second.height());
       qHBoxLayout->addWidget(btn);
       connected =
-          QObject::connect(btn, &QPushButton::pressed, &m_state,
-                           [=, this]() { m_state.InputChar(btn->text()); });
+          QObject::connect(btn, &QPushButton::pressed, &game_state_,
+                           [=, this]() { game_state_.InputChar(btn->text()); });
       IS_CONENCTED_OK
 
       connected =
-          QObject::connect(&m_state, &GameState::signalUpdateRowColors, this,
-                           [=, this](int row, QVector<QColor> colors) {
-                             QString rowString = m_state.GetRow(row);
-                             for (int k = 0; k < COLS_NUM; k++) {
+          QObject::connect(&game_state_, &GameState::SignalUpdateRowColors,
+                           this, [=, this](int row, QVector<QColor> colors) {
+                             QString rowString = game_state_.GetRow(row);
+                             for (int k = 0; k < kColsNum; k++) {
                                if (btn->text() == rowString[k]) {
                                  QPalette pal = btn->palette();
                                  pal.setColor(QPalette::Button, colors[k]);
@@ -39,8 +39,8 @@ WidgetKeyboard::WidgetKeyboard(GameState& state) : m_state(state) {
                            });
       IS_CONENCTED_OK
 
-      connected =
-          QObject::connect(&m_state, &GameState::signalReset, this, [btn]() {
+      connected = QObject::connect(
+          &game_state_, &GameState::SignalReset, this, [btn]() {
             QPalette pal = btn->palette();
             pal.setColor(QPalette::Button, QColor(239, 239, 239, 255));
             btn->setAutoFillBackground(true);

@@ -17,7 +17,8 @@ const std::map<LoginStatus, std::string> kLoginStatusString = {
     {LoginStatus::kPasswordEmpty, "Введите пароль"s},
     {LoginStatus::kUnauthorized, "Неправильный логин или пароль"s},
     {LoginStatus::kLoginIsOk, "Авторизация прошла успешно"s},
-    {LoginStatus::kRequestInProgress, "Соединение с сервером.."s}};
+    {LoginStatus::kRequestInProgress, "Соединение с сервером.."s},
+    {LoginStatus::kServerError, "Ошибка на сервере..."s}};
 
 const std::map<RegistrationStatus, std::string> kRegistrationStatusString = {
     {RegistrationStatus::kNone, ""s},
@@ -29,7 +30,8 @@ const std::map<RegistrationStatus, std::string> kRegistrationStatusString = {
     {RegistrationStatus::kUserNameDuplicate, "Имя пользователя занято"s},
     {RegistrationStatus::kRegistrationIsOk, "Регистрация возможна"s},
     {RegistrationStatus::kBadEmailAddress, "Неправильный формат адреса почты"s},
-    {RegistrationStatus::kRequestInProgress, "Соединение с сервером.."s}};
+    {RegistrationStatus::kRequestInProgress, "Соединение с сервером.."s},
+    {RegistrationStatus::kServerError, "Ошибка на сервере..."s}};
 
 void WidgetAuthorization::LoginDataWasChanged() {
   std::vector<std::string> resultMessage;
@@ -235,8 +237,9 @@ WidgetAuthorization::WidgetAuthorization(WidgetApplicationLogic& widget_logic,
   IS_CONENCTED_OK
   connected = QObject::connect(
       &widget_application_logic_, &WidgetApplicationLogic::StateChanged, this,
-      [=, this](WidgetApplicationLogic::State state) {
-        if (state == WidgetApplicationLogic::State::kAuthorization) {
+      [=, this](WidgetApplicationLogic::State state_previous,
+                WidgetApplicationLogic::State state_now) {
+        if (state_now == WidgetApplicationLogic::State::kAuthorization) {
           ProcessLogOut();
         }
       });
@@ -268,6 +271,11 @@ void WidgetAuthorization::ProcessLogin(LoginStatus status) {
     label_info_login->setStyleSheet(styleSheet);
     label_info_login->setText(QString::fromStdString(
         kLoginStatusString.at(LoginStatus::kUnauthorized)));
+  } else if (status == LoginStatus::kServerError) {
+    QString styleSheet("QLabel { color : red; }");
+    label_info_login->setStyleSheet(styleSheet);
+    label_info_login->setText(QString::fromStdString(
+        kLoginStatusString.at(LoginStatus::kServerError)));
   }
 }
 
@@ -284,6 +292,12 @@ void WidgetAuthorization::ProcessRegistration(RegistrationStatus status) {
     label_info_registration->setStyleSheet(styleSheet);
     label_info_registration->setText(QString::fromStdString(
         kRegistrationStatusString.at(RegistrationStatus::kRegistrationIsOk)));
+    btn_registration->setEnabled(true);
+  } else if (status == RegistrationStatus::kServerError) {
+    QString styleSheet("QLabel { color : red; }");
+    label_info_registration->setStyleSheet(styleSheet);
+    label_info_registration->setText(QString::fromStdString(
+        kRegistrationStatusString.at(RegistrationStatus::kServerError)));
     btn_registration->setEnabled(true);
   }
 }
