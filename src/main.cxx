@@ -1,12 +1,12 @@
 #include <QApplication>
 #include <QIcon>
-#include <WidgetGame.h>
+#include <WidgetApplication.h>
 int main(int argc, char **argv)
 {
     QApplication app (argc, argv);
     app.setWindowIcon(QIcon::fromTheme("wordle-client-qt"));
-    WidgetGame game;
-    game.show();
+    WidgetApplication application;
+    application.show();
 
     return app.exec();
 }

@@ -1,23 +1,25 @@
 #pragma once
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QObject>
+#include <APIApplicationLogic.h>
 #include <GameState.h>
-#include <WidgetKeyboard.h>
+#include <WidgetApplicationLogic.h>
 #include <WidgetButtons.h>
+#include <WidgetKeyboard.h>
+#include <QObject>
+#include <QVBoxLayout>
+#include <QWidget>
 
-class WidgetGame : public QWidget
-{
-Q_OBJECT
+class WidgetGame : public QWidget {
+  Q_OBJECT
 
-public:
-    WidgetGame();
+ public:
+  WidgetGame(WidgetApplicationLogic& widget_logic,
+             APIApplicationLogic& api_logic);
 
-private:
-    GameState m_state;
+ private:
+  GameState game_state_;
+  WidgetApplicationLogic& widget_application_logic_;
+  APIApplicationLogic& api_application_logic_;
 
-protected:
-    virtual void keyPressEvent(QKeyEvent* event) override;
+ protected:
+  virtual void keyPressEvent(QKeyEvent* event) override;
 };
-
-

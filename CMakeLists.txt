@@ -13,7 +13,19 @@ message(INFO "CMAKE_CXX_COMPILE_FEATURES = ${CMAKE_CXX_COMPILE_FEATURES}")
 message(INFO "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core)
-set(SOURCE_FILES__ main.cxx GameState.cxx GameState.h WidgetButtons.cxx WidgetButtons.h WidgetKeyboard.cxx WidgetButtons.h WidgetGame.h WidgetGame.cxx)
+set(SOURCE_FILES__ 
+    main.cxx 
+    GameState.cxx GameState.h 
+    WidgetButtons.cxx WidgetButtons.h 
+    WidgetKeyboard.cxx WidgetButtons.h 
+    WidgetGame.h WidgetGame.cxx 
+    WidgetApplication.h WidgetApplication.cxx
+    WidgetApplicationLogic.h WidgetApplicationLogic.cxx
+    APIApplicationLogic.h APIApplicationLogic.cxx
+    WidgetAuthorization.h WidgetAuthorization.cxx
+    WidgetMenu.h WidgetMenu.cxx
+    WidgetTopMenu.h WidgetTopMenu.cxx
+)
 list(TRANSFORM SOURCE_FILES__ PREPEND "src/")
 if(EMSCRIPTEN)
     qt_add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES__})

@@ -24,8 +24,10 @@ git submodule init
 git submodule update
 docker build --target=qt_from_repo . -t wordle-client-qt-build-desktop
 #TODO docker build --target=qt_from_source . -t wordle-client-qt-build-desktop #другая опция собрать Qt из исходников.
-mkdir result #Тут будет инсталятор 
-docker run -v ./result:/result wordle-client-qt-build-desktop
+#Скопировать .deb пакет из образа в .
+idTempContainer=$(docker create wordle-client-qt-build-desktop)
+docker cp "$idTempContainer":/result/*.deb .
+docker rm "$idTempContainer"
 ```
 
 <!--Собрать клиент wasm и запустить для дебага-->

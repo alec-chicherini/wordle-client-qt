@@ -1,25 +1,22 @@
 #pragma once
-#include <QPushButton>
-#include <QGridLayout>
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QDebug>
+#include <QGridLayout>
+#include <QHBoxLayout>
 #include <QObject>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QWidget>
 
 #include <vector>
 
 #include <GameState.h>
 
-class WidgetKeyboard : public QWidget
-{
-Q_OBJECT
+class WidgetKeyboard : public QWidget {
+  Q_OBJECT
 
-public:
-    WidgetKeyboard(GameState& state);
+ public:
+  WidgetKeyboard(GameState& state);
 
-private:
-    GameState& m_state;
+ private:
+  GameState& game_state_;
 };
-
-

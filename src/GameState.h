@@ -1,53 +1,52 @@
 #pragma once
-#include <QDebug>
-#include <QObject>
-#include <QHash>
-#include <array>
-#include <unordered_set>
-#include <filesystem>
+#include <APIApplicationLogic.h>
 #include <QColor>
+#include <QDebug>
+#include <QHash>
+#include <QObject>
+#include <array>
+// #include <filesystem>
+#include <unordered_set>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 namespace std {
-  template<> struct hash<QString> {
-    std::size_t operator()(const QString& s) const noexcept {
-      return (size_t) qHash(s);
-    }
-  };
-}
+template <>
+struct hash<QString> {
+  std::size_t operator()(const QString& s) const noexcept {
+    return (size_t)qHash(s);
+  }
+};
+}  // namespace std
 #endif
-constexpr int ROWS_NUM = 6;
-constexpr int COLS_NUM = 5;
+constexpr int kRowsNum = 6;
+constexpr int kColsNum = 5;
 
-class GameState : public QObject
-{
-    Q_OBJECT
+class GameState : public QObject {
+  Q_OBJECT
 
-public:
-    void InputChar(const QString& ch);
-    GameState();
-    QString GetRow(int);
-    enum class eProcessRowResult
-    {
-        WORD_DO_NOT_EXISTS,
-        WORD_EXISTS,
-        WORD_IS_ANSWER
-    };
-    eProcessRowResult ProcessRow();
-    void AddWordsFromFile(std::filesystem::path p);
-    QVector<QColor> ProcessRowColors(const QString& qStr);
-    void Reset();
+ public:
+  void InputChar(const QString& ch);
+  GameState(APIApplicationLogic& api_logic);
+  QString GetRow(int);
+  QVector<QColor> CheckTheRowColors(const std::vector<TheWordColor>& colors);
 
-signals:
-    void signalMsgBox(QString);
-    void signalUpdate(int);
-    void signalUpdateRowColors(int, QVector<QColor>);
-    void signalQuitOrRestart();
-    void signalReset();
+ public slots:
+  void ProcessCheckTheRow(CheckTheRowResult result, int num_of_tries,
+                          std::vector<TheWordColor> colors,
+                          const std::string& word_answer);
+  void ProcessNewGame(QString game_id);
+  void Reset();
+ signals:
+  void SignalMsgBox(QString);
+  void SignalUpdate(int);
+  void SignalUpdateRowColors(int, QVector<QColor>);
+  void SignalQuitOrRestart();
+  void SignalReset();
 
-private:
-    std::array<QString,ROWS_NUM> m_game_state_array;
-    int m_row{0};
-    QString m_word_hidden;
-    std::unordered_set<QString> m_set_of_words;
+ private:
+  std::array<QString, kRowsNum> m_game_state_array;
+  int m_row{0};
+  QString game_id_;
+  APIApplicationLogic& api_application_logic_;
+  bool keyboard_lock_;
 };

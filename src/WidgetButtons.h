@@ -1,24 +1,23 @@
 #pragma once
-#include <QPushButton>
-#include <QGridLayout>
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QDebug>
+#include <QGridLayout>
+#include <QHBoxLayout>
 #include <QObject>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QWidget>
 
 #include <vector>
 
 #include <GameState.h>
 
-class WidgetButtons : public QWidget
-{
-Q_OBJECT
+class WidgetButtons : public QWidget {
+  Q_OBJECT
 
-public:
-    WidgetButtons(GameState& state);
+ public:
+  WidgetButtons(GameState& state);
 
-private:
-    GameState& m_state;
-    std::array<std::array<QPushButton*,COLS_NUM>,ROWS_NUM> m_btns;
+ private:
+  GameState& game_state_;
+  std::array<std::array<QPushButton*, kColsNum>, kRowsNum> m_btns;
 };
