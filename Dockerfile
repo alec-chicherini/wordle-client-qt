@@ -6,7 +6,8 @@ RUN apt update && \
     python3 \
     build-essential \
     xz-utils \
-    wget
+    wget \
+    clang-format
 
 RUN wget -O - https://raw.githubusercontent.com/alec-chicherini/development-scripts/refs/heads/main/cmake/install_cmake.sh 2>/dev/null | bash
 
@@ -61,6 +62,15 @@ COPY . /wordle-client-qt
 RUN mkdir /result
 ENTRYPOINT ["bash", "/wordle-client-qt/deploy/rebuild.sh"]
 
+FROM ubuntu2404_common_deps AS ubuntu2404_userver_2_7
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN DEPS_FILE="https://raw.githubusercontent.com/userver-framework/userver/refs/heads/develop/scripts/docs/en/deps/ubuntu-24.04.md" && \
+    apt install --allow-downgrades -y $(wget -q -O - ${DEPS_FILE})
+
+RUN wget https://github.com/userver-framework/userver/releases/download/v2.7/ubuntu24.04-libuserver-all-dev_2.7_amd64.deb && \
+    dpkg -i ubuntu24.04-libuserver-all-dev_2.7_amd64.deb
+
 FROM ubuntu:20.04 AS qt_from_repo
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && \
@@ -77,7 +87,7 @@ RUN mkdir /result
 RUN bash /wordle-client-qt/deploy/rebuild.sh
 ENTRYPOINT ["ls", "/result"]
 
-FROM ubuntu2404_qt_deps AS qt_wasm_build_from_source
+FROM ubuntu2404_qt_deps AS ubuntu2404_qt_lib_wasm_build
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && \
     apt install -y \
@@ -107,6 +117,16 @@ RUN cd /qt-everywhere-src-6.7.3 && mkdir qt-build-wasm && cd qt-build-wasm && \
 RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --build . --parallel 4
 RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --install . --prefix /Qt-6.7.3-wasm
 
+FROM ubuntu2404_qt_lib_wasm_build AS ubuntu2404_userver_2_7_and_qt_wasm
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN DEPS_FILE="https://raw.githubusercontent.com/userver-framework/userver/refs/heads/develop/scripts/docs/en/deps/ubuntu-24.04.md" && \
+    apt install --allow-downgrades -y $(wget -q -O - ${DEPS_FILE})
+
+RUN wget https://github.com/userver-framework/userver/releases/download/v2.7/ubuntu24.04-libuserver-all-dev_2.7_amd64.deb && \
+    dpkg -i ubuntu24.04-libuserver-all-dev_2.7_amd64.deb
+
+FROM ubuntu2404_userver_2_7_and_qt_wasm AS qt_wasm_build_from_source
 COPY . /wordle-client-qt
 RUN cd wordle-client-qt && mkdir build_wasm && cd build_wasm && \
     /Qt-6.7.3-wasm/bin/./qt-cmake .. && \

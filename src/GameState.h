@@ -5,7 +5,6 @@
 #include <QHash>
 #include <QObject>
 #include <array>
-// #include <filesystem>
 #include <unordered_set>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -28,13 +27,13 @@ class GameState : public QObject {
   void InputChar(const QString& ch);
   GameState(APIApplicationLogic& api_logic);
   QString GetRow(int);
-  QVector<QColor> CheckTheRowColors(const std::vector<TheWordColor>& colors);
+  QVector<QColor> CheckTheRowColors(const std::vector<TheCharColor>& colors);
 
  public slots:
   void ProcessCheckTheRow(CheckTheRowResult result, int num_of_tries,
-                          std::vector<TheWordColor> colors,
+                          std::vector<TheCharColor> colors,
                           const std::string& word_answer);
-  void ProcessNewGame(QString game_id);
+  void ProcessNewGame();
   void Reset();
  signals:
   void SignalMsgBox(QString);
@@ -46,7 +45,6 @@ class GameState : public QObject {
  private:
   std::array<QString, kRowsNum> m_game_state_array;
   int m_row{0};
-  QString game_id_;
   APIApplicationLogic& api_application_logic_;
   bool keyboard_lock_;
 };

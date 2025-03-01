@@ -7,12 +7,12 @@
 QString GameState::GetRow(int row) { return m_game_state_array[row]; };
 
 QVector<QColor> GameState::CheckTheRowColors(
-    const std::vector<TheWordColor>& colors) {
+    const std::vector<TheCharColor>& colors) {
   QVector<QColor> result(kColsNum);
   for (qsizetype i = 0; i < qsizetype(kColsNum); i++) {
-    if (colors[i] == TheWordColor::kGreen) {
+    if (colors[i] == TheCharColor::kGreen) {
       result[i] = Qt::green;
-    } else if (colors[i] == TheWordColor::kYellow) {
+    } else if (colors[i] == TheCharColor::kYellow) {
       result[i] = Qt::yellow;
     } else {
       result[i] = Qt::lightGray;
@@ -32,7 +32,7 @@ void GameState::InputChar(const QString& ch) {
     }
   } else if (ch == "Enter" && current_word.length() == kColsNum) {
     keyboard_lock_ = true;
-    api_application_logic_.RequestCheckTheRow(current_word, game_id_);
+    api_application_logic_.RequestCheckTheRow(current_word);
   } else if (ch == "Enter" && current_word.length() != kColsNum) {
     emit SignalMsgBox(QString("Букв меньше чем надо"));
   } else {
@@ -42,7 +42,6 @@ void GameState::InputChar(const QString& ch) {
     }
   }
 };
-
 
 GameState::GameState(APIApplicationLogic& api_logic)
     : api_application_logic_(api_logic), keyboard_lock_(false) {
@@ -62,14 +61,13 @@ void GameState::Reset() {
   api_application_logic_.RequestNewGame();
 }
 
-void GameState::ProcessNewGame(QString game_id) {
-  game_id_ = game_id;
+void GameState::ProcessNewGame() {
   for (size_t i = 0; i < kRowsNum; i++) {
     m_game_state_array[i] = QString();
     emit SignalUpdateRowColors(
-        i, CheckTheRowColors({TheWordColor::kNone, TheWordColor::kNone,
-                              TheWordColor::kNone, TheWordColor::kNone,
-                              TheWordColor::kNone}));
+        i, CheckTheRowColors({TheCharColor::kNone, TheCharColor::kNone,
+                              TheCharColor::kNone, TheCharColor::kNone,
+                              TheCharColor::kNone}));
     emit SignalUpdate(i);
   }
   m_row = 0;
@@ -78,7 +76,7 @@ void GameState::ProcessNewGame(QString game_id) {
 
 void GameState::ProcessCheckTheRow(CheckTheRowResult check_the_row_result,
                                    int num_of_tries,
-                                   std::vector<TheWordColor> colors,
+                                   std::vector<TheCharColor> colors,
                                    const std::string& word_answer) {
   keyboard_lock_ = false;
   if (check_the_row_result == CheckTheRowResult::kWordIsAnswer) {

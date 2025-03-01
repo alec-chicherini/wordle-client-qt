@@ -13,6 +13,23 @@ message(INFO "CMAKE_CXX_COMPILE_FEATURES = ${CMAKE_CXX_COMPILE_FEATURES}")
 message(INFO "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core)
+
+find_package(userver COMPONENTS core chaotic REQUIRED)
+file(GLOB_RECURSE SCHEMAS ${CMAKE_CURRENT_SOURCE_DIR}/wordle-json/schemas/*.yaml)
+userver_target_generate_chaotic(${CMAKE_PROJECT_NAME}-chgen
+    ARGS
+        # Map '/components/schemas/*' JSONSchema types to C++ types in 'samples::hello' namespace
+        -n "/components/schemas/([^/]*)/=wordle_json::{0}"
+        # Generate serializers for responses
+        --generate-serializers
+    OUTPUT_DIR
+        ${CMAKE_CURRENT_BINARY_DIR}/src
+    SCHEMAS
+        ${SCHEMAS}
+    RELATIVE_TO
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 set(SOURCE_FILES__ 
     main.cxx 
     GameState.cxx GameState.h 
@@ -31,14 +48,14 @@ if(EMSCRIPTEN)
     qt_add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES__})
     set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES LINK_FLAGS "--preload-file ../deploy/wordle-client-qt/words/words.txt@/opt/wordle-client-qt/words/words.txt")
     target_link_options(${CMAKE_PROJECT_NAME} PUBLIC -sASYNCIFY -Os)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets ${PROJECT_NAME}-chgen)
 else()
     add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES__})
-    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets stdc++fs)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets ${PROJECT_NAME}-chgen)
 endif()
 
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/wordle-json/src ${CMAKE_CURRENT_BINARY_DIR}/src)
 
 #CPack
 if(EMSCRIPTEN)

@@ -1,39 +1,7 @@
 #pragma once
 #include <QDebug>
 #include <QObject>
-
-enum class LoginStatus {
-  kNone = 0,
-  kUserNameEmpty,
-  kPasswordEmpty,
-  kUnauthorized,
-  kLoginIsOk,
-  kRequestInProgress,
-  kServerError
-};
-
-enum class RegistrationStatus {
-  kNone = 0,
-  kUserNameEmpty,
-  kPasswordEmpty,
-  kPasswordConfirmEmpty,
-  kPasswordMismatch,
-  kUserNameDuplicate,
-  kRegistrationIsOk,
-  kRequestInProgress,
-  kBadEmailAddress,
-  kServerError
-};
-
-enum class CheckTheRowResult {
-  kNone = 0,
-  kWordDoNotExists,
-  kWordExists,
-  kWordIsAnswer,
-  kServerError
-};
-
-enum class TheWordColor { kNone, kGreen, kYellow };
+#include <enums/server_game.hpp>
 
 class APIApplicationLogic : public QObject {
   Q_OBJECT
@@ -43,14 +11,18 @@ class APIApplicationLogic : public QObject {
   void RequestLogin(const QString& user_name, const QString& password);
   void RequestRegistration(const QString& user_name, const QString& password,
                            const QString& e_mail);
-  void RequestCheckTheRow(const QString& word, const QString& game_id);
+  void RequestCheckTheRow(const QString& word);
   void RequestNewGame();
 
  signals:
   void ResponseLogin(LoginStatus status);
   void ResponseRegistration(RegistrationStatus status);
   void ResponseCheckTheRow(CheckTheRowResult result, int num_of_tries,
-                           std::vector<TheWordColor> colors,
+                           std::vector<TheCharColor> colors,
                            const std::string& word_answer);
-  void ResponseNewGame(const QString& game_id);
+  void ResponseNewGame();
+
+ private:
+  QString game_uuid_{"01234567-89ab-cdef-0123-456789abcdef"};
+  QString user_uuid_{"00000000-89ab-cdef-0123-456789abcdef"};
 };
