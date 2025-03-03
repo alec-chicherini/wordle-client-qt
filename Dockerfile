@@ -113,7 +113,7 @@ RUN cd /qt-everywhere-src-6.7.3/qt-build-base && cmake --build . --parallel 4
 RUN cd /qt-everywhere-src-6.7.3/qt-build-base && cmake --install . --prefix /Qt-6.7.3-base
 
 RUN cd /qt-everywhere-src-6.7.3 && mkdir qt-build-wasm && cd qt-build-wasm && \
-    ../configure -qt-host-path /Qt-6.7.3-base -platform wasm-emscripten -prefix /Qt-6.7.3-wasm
+    ../configure -qt-host-path /Qt-6.7.3-base -platform wasm-emscripten-64 -prefix /Qt-6.7.3-wasm
 RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --build . --parallel 4
 RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --install . --prefix /Qt-6.7.3-wasm
 
