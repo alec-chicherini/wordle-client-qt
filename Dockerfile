@@ -129,7 +129,7 @@ RUN wget https://github.com/userver-framework/userver/releases/download/v2.7/ubu
 FROM ubuntu2404_userver_2_7_and_qt_wasm AS qt_wasm_build_from_source
 COPY . /wordle-client-qt
 RUN cd wordle-client-qt && mkdir build_wasm && cd build_wasm && \
-    /Qt-6.7.3-wasm/bin/./qt-cmake .. && \
+    /Qt-6.7.3-wasm/bin/./qt-cmake -Duserver_DIR=/usr/lib/cmake/userver/ .. && \
     cmake --build . && \
     mkdir /result && \
     cp wordle-client-qt.* /result && \
