@@ -2,7 +2,7 @@
 #include <request_check_the_row_body.pb.h>
 #include <request_new_game_body.pb.h>
 #include <QTimer>
-
+#include <QNetworkAccessManager>
 APIApplicationLogic::APIApplicationLogic() {}
 void APIApplicationLogic::RequestLogin(const QString& user_name,
                                        const QString& password) {
@@ -92,7 +92,14 @@ void APIApplicationLogic::RequestNewGame() {
   std::string serialized;
   request_new_game_body.SerializeToString(&serialized);
 
-  qDebug() << "send RequestNewGameBody " << serialized;
+  QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+  connect(manager, &QNetworkAccessManager::finished, this, 
+      [=,this](QNetworkReply *reply){
+            for (const auto& header : reply->rawHeaderList())
+              qDebug() << "reply header " << header;
+      });
+  manager->get(QNetworkRequest(QUrl("http://repotest.ru:8088/")));
+  
 
   QTimer::singleShot(2000, this, [=, this] { emit ResponseNewGame(); });
 }
