@@ -3,6 +3,7 @@
 #include <request_new_game_body.pb.h>
 #include <QTimer>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 APIApplicationLogic::APIApplicationLogic() {}
 void APIApplicationLogic::RequestLogin(const QString& user_name,
                                        const QString& password) {
