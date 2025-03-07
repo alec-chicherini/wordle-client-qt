@@ -1,6 +1,6 @@
 [submodule "wordle-media"]
 	path = wordle-media
 	url = https://github.com/alec-chicherini/wordle-media.git
-[submodule "wordle-json"]
-	path = wordle-json
-	url = https://github.com/alec-chicherini/wordle-json.git
+[submodule "wordle-data"]
+	path = wordle-data
+	url = https://github.com/alec-chicherini/wordle-data.git

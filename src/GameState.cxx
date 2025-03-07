@@ -56,18 +56,17 @@ GameState::GameState(APIApplicationLogic& api_logic)
   IS_CONENCTED_OK
 };
 
-void GameState::Reset() {
-
-  api_application_logic_.RequestNewGame();
-}
+void GameState::Reset() { api_application_logic_.RequestNewGame(); }
 
 void GameState::ProcessNewGame() {
   for (size_t i = 0; i < kRowsNum; i++) {
     m_game_state_array[i] = QString();
     emit SignalUpdateRowColors(
-        i, CheckTheRowColors({TheCharColor::kNone, TheCharColor::kNone,
-                              TheCharColor::kNone, TheCharColor::kNone,
-                              TheCharColor::kNone}));
+        i,
+        CheckTheRowColors(
+            {TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
+             TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
+             TheCharColor::kNoneTheCharColor}));
     emit SignalUpdate(i);
   }
   m_row = 0;

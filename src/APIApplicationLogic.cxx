@@ -1,8 +1,7 @@
 #include <APIApplicationLogic.h>
+#include <request_check_the_row_body.pb.h>
+#include <request_new_game_body.pb.h>
 #include <QTimer>
-#include <schemas/server_game.hpp>
-#include <userver/formats/json.hpp>
-#include <userver/utils/boost_uuid4.hpp>
 
 APIApplicationLogic::APIApplicationLogic() {}
 void APIApplicationLogic::RequestLogin(const QString& user_name,
@@ -30,36 +29,38 @@ void APIApplicationLogic::RequestRegistration(const QString& user_name,
   }
 }
 void APIApplicationLogic::RequestCheckTheRow(const QString& word_) {
-  wordle_json::RequestCheckTheRowBody request_check_the_row_body = {
-      .user_uuid =
-          userver::utils::BoostUuidFromString(user_uuid_.toStdString()),
-      .game_uuid =
-          userver::utils::BoostUuidFromString(game_uuid_.toStdString()),
-      .word = word_.toStdString()};
+  UUID* user_uuid = new UUID;
+  user_uuid->set_value(user_uuid_.toStdString());
+  UUID* game_uuid = new UUID;
+  game_uuid->set_value(game_uuid_.toStdString());
+  wordle_data::RequestCheckTheRowBody request_check_the_row_body;
+  request_check_the_row_body.set_allocated_game_uuid(game_uuid);
+  request_check_the_row_body.set_allocated_user_uuid(user_uuid);
+  request_check_the_row_body.set_word(word_.toStdString());
 
-  auto userver_json =
-      userver::formats::json::ValueBuilder{request_check_the_row_body}
-          .ExtractValue();
-  qDebug() << "send RequestCheckTheRowBody "
-           << userver::formats::json::ToString(userver_json);
+  std::string serialized;
+  request_check_the_row_body.SerializeToString(&serialized);
+
+  qDebug() << "send RequestCheckTheRowBody " << serialized;
 
   if (word_ == QString("ЕРЕСЬ")) {
     QTimer::singleShot(2000, this, [=, this] {
       emit ResponseCheckTheRow(
           CheckTheRowResult::kWordDoNotExists, 1,
-          std::vector<TheCharColor>{TheCharColor::kNone, TheCharColor::kNone,
-                                    TheCharColor::kNone, TheCharColor::kNone,
-                                    TheCharColor::kNone},
+          std::vector<TheCharColor>{
+              TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
+              TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
+              TheCharColor::kNoneTheCharColor},
           std::string(""));
     });
   } else if (word_ == QString("ЕМЧАК")) {
     QTimer::singleShot(2000, this, [=, this] {
-      emit ResponseCheckTheRow(
-          CheckTheRowResult::kWordExists, 1,
-          std::vector<TheCharColor>{TheCharColor::kGreen, TheCharColor::kYellow,
-                                    TheCharColor::kNone, TheCharColor::kYellow,
-                                    TheCharColor::kGreen},
-          std::string(""));
+      emit ResponseCheckTheRow(CheckTheRowResult::kWordExists, 1,
+                               std::vector<TheCharColor>{
+                                   TheCharColor::kGreen, TheCharColor::kYellow,
+                                   TheCharColor::kNoneTheCharColor,
+                                   TheCharColor::kYellow, TheCharColor::kGreen},
+                               std::string(""));
     });
   } else if (word_ == QString("ЕССЕЙ")) {
     QTimer::singleShot(2000, this, [=, this] {
@@ -74,24 +75,24 @@ void APIApplicationLogic::RequestCheckTheRow(const QString& word_) {
     QTimer::singleShot(2000, this, [=, this] {
       emit ResponseCheckTheRow(
           CheckTheRowResult::kWordDoNotExists, 1,
-          std::vector<TheCharColor>{TheCharColor::kNone, TheCharColor::kNone,
-                                    TheCharColor::kNone, TheCharColor::kNone,
-                                    TheCharColor::kNone},
+          std::vector<TheCharColor>{
+              TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
+              TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
+              TheCharColor::kNoneTheCharColor},
           std::string(""));
     });
   }
 }
 void APIApplicationLogic::RequestNewGame() {
-  wordle_json::RequestNewGameBody request_new_game_body = {
-      .user_uuid =
-          userver::utils::BoostUuidFromString(user_uuid_.toStdString())};
-  auto userver_json =
-      userver::formats::json::ValueBuilder{request_new_game_body}
-          .ExtractValue();
-  qDebug() << "send RequestNewGameBody "
-           << userver::formats::json::ToString(userver_json);
+  UUID* user_uuid = new UUID;
+  user_uuid->set_value(user_uuid_.toStdString());
+  wordle_data::RequestNewGameBody request_new_game_body;
+  request_new_game_body.set_allocated_user_uuid(user_uuid);
 
-  QTimer::singleShot(2000, this, [=, this] {
-    emit ResponseNewGame();
-  });
+  std::string serialized;
+  request_new_game_body.SerializeToString(&serialized);
+
+  qDebug() << "send RequestNewGameBody " << serialized;
+
+  QTimer::singleShot(2000, this, [=, this] { emit ResponseNewGame(); });
 }

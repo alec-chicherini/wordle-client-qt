@@ -62,15 +62,6 @@ COPY . /wordle-client-qt
 RUN mkdir /result
 ENTRYPOINT ["bash", "/wordle-client-qt/deploy/rebuild.sh"]
 
-FROM ubuntu2404_common_deps AS ubuntu2404_userver_2_7
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN DEPS_FILE="https://raw.githubusercontent.com/userver-framework/userver/refs/heads/develop/scripts/docs/en/deps/ubuntu-24.04.md" && \
-    apt install --allow-downgrades -y $(wget -q -O - ${DEPS_FILE})
-
-RUN wget https://github.com/userver-framework/userver/releases/download/v2.7/ubuntu24.04-libuserver-all-dev_2.7_amd64.deb && \
-    dpkg -i ubuntu24.04-libuserver-all-dev_2.7_amd64.deb
-
 FROM ubuntu:20.04 AS qt_from_repo
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && \
@@ -113,23 +104,38 @@ RUN cd /qt-everywhere-src-6.7.3/qt-build-base && cmake --build . --parallel 4
 RUN cd /qt-everywhere-src-6.7.3/qt-build-base && cmake --install . --prefix /Qt-6.7.3-base
 
 RUN cd /qt-everywhere-src-6.7.3 && mkdir qt-build-wasm && cd qt-build-wasm && \
-    ../configure -qt-host-path /Qt-6.7.3-base -platform wasm-emscripten-64 -prefix /Qt-6.7.3-wasm
+    ../configure -qt-host-path /Qt-6.7.3-base -platform wasm-emscripten -prefix /Qt-6.7.3-wasm
 RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --build . --parallel 4
 RUN cd /qt-everywhere-src-6.7.3/qt-build-wasm && cmake --install . --prefix /Qt-6.7.3-wasm
 
-FROM ubuntu2404_qt_lib_wasm_build AS ubuntu2404_userver_2_7_and_qt_wasm
-ENV DEBIAN_FRONTEND=noninteractive
+FROM ubuntu2404_qt_lib_wasm_build AS ubuntu2404_protobuf_abseil_qt_wasm_build
+#abseil for protobuf v30.0
+RUN git clone https://github.com/abseil/abseil-cpp.git && \
+    cd abseil-cpp && \
+    git checkout 4a2ba8cadeb9890322697a4f99f71094b6fd3ceb && \
+    mkdir build && cd build && \
+    emcmake cmake .. && \
+    cmake --build . && \
+    cmake --install . && \
+    cd /
+#protobuf v30.0
+RUN git clone https://github.com/protocolbuffers/protobuf.git && \
+    cd protobuf && \
+    git checkout d295af5c3002c08e1bfd9d7f9e175d0a4d015f1e && \
+    mkdir build && cd build && \
+    emcmake cmake -Dabsl_DIR=/emsdk/upstream/emscripten/cache/sysroot/lib/cmake/absl/ -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_PROTOC_BINARIES=OFF -Dprotobuf_BUILD_LIBUPB=OFF ..  && \
+    cmake --build . && \
+    cmake --install .
 
-RUN DEPS_FILE="https://raw.githubusercontent.com/userver-framework/userver/refs/heads/develop/scripts/docs/en/deps/ubuntu-24.04.md" && \
-    apt install --allow-downgrades -y $(wget -q -O - ${DEPS_FILE})
+FROM ubuntu2404_protobuf_abseil_qt_wasm_build AS qt_wasm_build_from_source
+RUN apt install -y protobuf-compiler unzip
 
-RUN wget https://github.com/userver-framework/userver/releases/download/v2.7/ubuntu24.04-libuserver-all-dev_2.7_amd64.deb && \
-    dpkg -i ubuntu24.04-libuserver-all-dev_2.7_amd64.deb
+RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v30.0/protoc-30.0-linux-x86_64.zip && \
+    unzip -o protoc-30.0-linux-x86_64.zip
 
-FROM ubuntu2404_userver_2_7_and_qt_wasm AS qt_wasm_build_from_source
 COPY . /wordle-client-qt
 RUN cd wordle-client-qt && mkdir build_wasm && cd build_wasm && \
-    /Qt-6.7.3-wasm/bin/./qt-cmake -Duserver_DIR=/usr/lib/cmake/userver/ .. && \
+    /Qt-6.7.3-wasm/bin/./qt-cmake -Dabsl_DIR=/emsdk/upstream/emscripten/cache/sysroot/lib/cmake/absl/ .. && \
     cmake --build . && \
     mkdir /result && \
     cp wordle-client-qt.* /result && \

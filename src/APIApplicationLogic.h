@@ -1,8 +1,10 @@
 #pragma once
+#include <enum_check_the_row_result.pb.h>
+#include <enum_the_char_color.pb.h>
 #include <QDebug>
 #include <QObject>
 #include <enums/server_game.hpp>
-
+using namespace wordle_data;
 class APIApplicationLogic : public QObject {
   Q_OBJECT
 

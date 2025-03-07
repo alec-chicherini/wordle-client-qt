@@ -44,7 +44,7 @@ docker rm "$idTempContainer"
 ```bash
 git clone https://github.com/alec-chicherini/wordle-client-qt.git
 cd wordle-client-qt
-git checkout 25.02
+#git checkout 25.02
 #git checkout 25.03
 git submodule init
 git submodule update
