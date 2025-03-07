@@ -195,6 +195,7 @@ if(EMSCRIPTEN)
     target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
                           Qt${QT_VERSION_MAJOR}::Gui
                           Qt${QT_VERSION_MAJOR}::Widgets
+                          Qt${QT_VERSION_MAJOR}::Network
                           ${CMAKE_PROJECT_NAME}-generated
                           )
 else()
