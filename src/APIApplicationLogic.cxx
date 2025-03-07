@@ -99,7 +99,7 @@ void APIApplicationLogic::RequestNewGame() {
             for (const auto& header : reply->rawHeaderList())
               qDebug() << "reply header " << header;
       });
-  manager->get(QNetworkRequest(QUrl("http://repotest.ru:8088/")));
+  manager->get(QNetworkRequest(QUrl("http://repotest.ru:8088/main.cxx")));
   
 
   QTimer::singleShot(2000, this, [=, this] { emit ResponseNewGame(); });
