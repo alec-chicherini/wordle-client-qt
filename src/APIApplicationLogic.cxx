@@ -1,9 +1,7 @@
 #include <APIApplicationLogic.h>
-#include <request_check_the_row_body.pb.h>
-#include <request_new_game_body.pb.h>
+#include <NetworkHelper.h>
 #include <QTimer>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
+ using namespace std::literals;
 APIApplicationLogic::APIApplicationLogic() {}
 void APIApplicationLogic::RequestLogin(const QString& user_name,
                                        const QString& password) {
@@ -39,50 +37,19 @@ void APIApplicationLogic::RequestCheckTheRow(const QString& word_) {
   request_check_the_row_body.set_allocated_user_uuid(user_uuid);
   request_check_the_row_body.set_word(word_.toStdString());
 
-  std::string serialized;
-  request_check_the_row_body.SerializeToString(&serialized);
-
-  qDebug() << "send RequestCheckTheRowBody " << serialized;
-
-  if (word_ == QString("ЕРЕСЬ")) {
-    QTimer::singleShot(2000, this, [=, this] {
-      emit ResponseCheckTheRow(
-          CheckTheRowResult::kWordDoNotExists, 1,
-          std::vector<TheCharColor>{
-              TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
-              TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
-              TheCharColor::kNoneTheCharColor},
-          std::string(""));
-    });
-  } else if (word_ == QString("ЕМЧАК")) {
-    QTimer::singleShot(2000, this, [=, this] {
-      emit ResponseCheckTheRow(CheckTheRowResult::kWordExists, 1,
-                               std::vector<TheCharColor>{
-                                   TheCharColor::kGreen, TheCharColor::kYellow,
-                                   TheCharColor::kNoneTheCharColor,
-                                   TheCharColor::kYellow, TheCharColor::kGreen},
-                               std::string(""));
-    });
-  } else if (word_ == QString("ЕССЕЙ")) {
-    QTimer::singleShot(2000, this, [=, this] {
-      emit ResponseCheckTheRow(
-          CheckTheRowResult::kWordIsAnswer, 1,
-          std::vector<TheCharColor>{TheCharColor::kGreen, TheCharColor::kGreen,
-                                    TheCharColor::kGreen, TheCharColor::kGreen,
-                                    TheCharColor::kGreen},
-          std::string(""));
-    });
-  } else {
-    QTimer::singleShot(2000, this, [=, this] {
-      emit ResponseCheckTheRow(
-          CheckTheRowResult::kWordDoNotExists, 1,
-          std::vector<TheCharColor>{
-              TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
-              TheCharColor::kNoneTheCharColor, TheCharColor::kNoneTheCharColor,
-              TheCharColor::kNoneTheCharColor},
-          std::string(""));
-    });
-  }
+  SendRequest(
+      request_check_the_row_body,
+      "https://wordle-server-game.repotest.ru/v1/check_the_row"s,
+      [=, this](const wordle_data::ResponseCheckTheRowBody& response) -> void {
+        constexpr size_t GAME_WORD_SIZE_ = 5;
+        emit ResponseCheckTheRow(
+            response.check_the_row_result(), response.number_of_attempts_left(),
+            std::vector<TheCharColor>{
+                response.the_char_colors(0), response.the_char_colors(1),
+                response.the_char_colors(2), response.the_char_colors(3),
+                response.the_char_colors(4)},
+            response.word_answer());
+      });
 }
 void APIApplicationLogic::RequestNewGame() {
   UUID* user_uuid = new UUID;
@@ -90,17 +57,11 @@ void APIApplicationLogic::RequestNewGame() {
   wordle_data::RequestNewGameBody request_new_game_body;
   request_new_game_body.set_allocated_user_uuid(user_uuid);
 
-  std::string serialized;
-  request_new_game_body.SerializeToString(&serialized);
-
-  QNetworkAccessManager* manager = new QNetworkAccessManager(this);
-  connect(manager, &QNetworkAccessManager::finished, this, 
-      [=,this](QNetworkReply *reply){
-            for (const auto& header : reply->rawHeaderList())
-              qDebug() << "reply header " << header;
+  SendRequest(
+      request_new_game_body,
+      "https://wordle-server-game.repotest.ru/v1/new_game"s,
+      [=, this](const wordle_data::ResponseNewGameBody& response) -> void {
+        game_uuid_ = QString::fromStdString(response.game_uuid().value());
+        emit ResponseNewGame(response);
       });
-  manager->get(QNetworkRequest(QUrl("http://repotest.ru:8088")));
-  
-
-  QTimer::singleShot(2000, this, [=, this] { emit ResponseNewGame(); });
 }

@@ -33,7 +33,7 @@ class GameState : public QObject {
   void ProcessCheckTheRow(CheckTheRowResult result, int num_of_tries,
                           std::vector<TheCharColor> colors,
                           const std::string& word_answer);
-  void ProcessNewGame();
+  void ProcessNewGame(const wordle_data::ResponseNewGameBody& response);
   void Reset();
  signals:
   void SignalMsgBox(QString);

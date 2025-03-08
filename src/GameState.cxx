@@ -58,7 +58,8 @@ GameState::GameState(APIApplicationLogic& api_logic)
 
 void GameState::Reset() { api_application_logic_.RequestNewGame(); }
 
-void GameState::ProcessNewGame() {
+void GameState::ProcessNewGame(
+    const wordle_data::ResponseNewGameBody& response) {
   for (size_t i = 0; i < kRowsNum; i++) {
     m_game_state_array[i] = QString();
     emit SignalUpdateRowColors(
