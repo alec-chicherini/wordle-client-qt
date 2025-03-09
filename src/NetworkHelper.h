@@ -31,8 +31,9 @@ class NetworkHelper : public QObject {
 
  public:
   template <typename CALLBACK_T, typename REQUEST_T>
-  void SendRequest(const REQUEST_T& request_body, const std::string& url,
-                   CALLBACK_T&& response_callback) {
+  void SendRequest(const REQUEST_T& request_body,
+                   QNetworkAccessManager::Operation operation,
+                   const std::string& url, CALLBACK_T&& response_callback) {
     using RESPONSE_T = typename first_arg_lambda<CALLBACK_T>::type;
 
     [[maybe_unused]] bool connected;
@@ -43,16 +44,23 @@ class NetworkHelper : public QObject {
     request.setUrl(QUrl(QString::fromStdString(url)));
     request.setRawHeader(QByteArray("application/octet-stream"),
                          QByteArray(serialized.c_str()));
+    QNetworkReply* reply = nullptr;
+    switch (operation) {
+      case QNetworkAccessManager::PostOperation {
+        reply = network_access_manager.post(request); break;
+      } default:
+        break;
+    }
 
-    QNetworkReply* reply = network_access_manager.get(request);
-
-    connected = connect(reply, &QIODevice::readyRead, this, [&]() {
-      QByteArray byte_array_response_serialized = reply->readAll();
-      RESPONSE_T response;
-      response.ParseFromString(byte_array_response_serialized.constData());
-      response_callback(response);
-    });
-    IS_CONENCTED_OK
+    if (reply != nullptr) {
+      connected = connect(reply, &QIODevice::readyRead, this, [&]() {
+        QByteArray byte_array_response_serialized = reply->readAll();
+        RESPONSE_T response;
+        response.ParseFromString(byte_array_response_serialized.constData());
+        response_callback(response);
+      });
+      IS_CONENCTED_OK
+    }
   }
 
  private:

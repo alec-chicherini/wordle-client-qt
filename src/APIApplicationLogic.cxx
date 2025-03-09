@@ -1,7 +1,7 @@
 #include <APIApplicationLogic.h>
 #include <NetworkHelper.h>
 #include <QTimer>
- using namespace std::literals;
+using namespace std::literals;
 APIApplicationLogic::APIApplicationLogic() {}
 void APIApplicationLogic::RequestLogin(const QString& user_name,
                                        const QString& password) {
@@ -39,6 +39,7 @@ void APIApplicationLogic::RequestCheckTheRow(const QString& word_) {
 
   SendRequest(
       request_check_the_row_body,
+      QNetworkAccessManager::PostOperation,
       "https://wordle-server-game.repotest.ru/v1/check_the_row"s,
       [=, this](const wordle_data::ResponseCheckTheRowBody& response) -> void {
         constexpr size_t GAME_WORD_SIZE_ = 5;
@@ -58,7 +59,7 @@ void APIApplicationLogic::RequestNewGame() {
   request_new_game_body.set_allocated_user_uuid(user_uuid);
 
   SendRequest(
-      request_new_game_body,
+      request_new_game_body, NetworkAccessManager::PostOperation,
       "https://wordle-server-game.repotest.ru/v1/new_game"s,
       [=, this](const wordle_data::ResponseNewGameBody& response) -> void {
         game_uuid_ = QString::fromStdString(response.game_uuid().value());
