@@ -40,7 +40,7 @@ void APIApplicationLogic::RequestCheckTheRow(const QString& word_) {
   SendRequest(
       request_check_the_row_body,
       QNetworkAccessManager::PostOperation,
-      "https://wordle-server-game.repotest.ru/v1/check_the_row"s,
+      "https://wordle-server-game.repotest.ru/v1/row"s,
       [=, this](const wordle_data::ResponseCheckTheRowBody& response) -> void {
         constexpr size_t GAME_WORD_SIZE_ = 5;
         emit ResponseCheckTheRow(
@@ -60,7 +60,7 @@ void APIApplicationLogic::RequestNewGame() {
 
   SendRequest(
       request_new_game_body, NetworkAccessManager::PostOperation,
-      "https://wordle-server-game.repotest.ru/v1/new_game"s,
+      "https://wordle-server-game.repotest.ru/v1/new-game"s,
       [=, this](const wordle_data::ResponseNewGameBody& response) -> void {
         game_uuid_ = QString::fromStdString(response.game_uuid().value());
         emit ResponseNewGame(response);
